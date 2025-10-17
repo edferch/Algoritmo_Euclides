@@ -1,11 +1,50 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visualizador del Algoritmo de Dijkstra</title>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="css/page2.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1>ALGORITMO DE DIJKSTRA</h1>
+  <header>
+    <h1>Algoritmo de Dijkstra: Rutas en Guatemala</h1>
+    <p>Encuentra la ruta más corta entre dos lugares turísticos.</p>
+  </header>
+  
+  <div class="controls">
+    <div class="input-group">
+      <label for="start-node">📍 Origen</label>
+      <select id="start-node"></select>
+    </div>
+    <div class="input-group">
+      <label for="end-node">🏁 Destino</label>
+      <select id="end-node"></select>
+    </div>
+    <button id="submit-btn">✨ Visualizar Paso a Paso</button>
+  </div>
+  
+  <div class="visualization-container">
+    <main id="canvas-container"></main>
+    <aside class="state-panel">
+      <h2 id="step-title">Estado del Algoritmo</h2>
+      <p id="step-description">Selecciona un origen y destino y presiona "Visualizar".</p>
+      <div id="table-container">
+        <!-- La tabla de Dijkstra se generará aquí -->
+      </div>
+      <div id="navigation-controls" class="navigation-controls">
+        <button id="prev-btn">◀ Anterior</button>
+        <span id="step-counter">Paso: 0 / 0</span>
+        <button id="next-btn">Siguiente ▶</button>
+      </div>
+    </aside>
+  </div>
+  <script src="js/page2.js"></script>
 </body>
 </html>
