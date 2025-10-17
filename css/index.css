@@ -1,0 +1,77 @@
+/* Estilo General del Cuerpo */
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #1d2b64, #2c3e50);
+  color: #f0f0f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  padding: 20px;
+  min-height: 100vh;
+  text-align: center;
+}
+
+.container {
+  max-width: 800px;
+  width: 100%;
+}
+
+/* Encabezado */
+header {
+  margin-bottom: 40px;
+}
+
+header h1 {
+  font-size: 3rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+header p {
+  font-size: 1.2rem;
+  font-weight: 300;
+  color: #bdc3c7;
+  max-width: 600px;
+  margin: 10px auto;
+}
+
+/* Menú de navegación */
+.menu {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.menu-button {
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 25px 35px;
+  border-radius: 12px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  text-decoration: none;
+  color: #f0f0f0;
+  width: 300px;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.menu-button:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 35px rgba(0, 0, 0, 0.3);
+}
+
+.menu-button h2 {
+  font-size: 1.5rem;
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #3498db;
+}
+
+.menu-button p {
+  font-size: 1rem;
+  font-weight: 300;
+  color: #bdc3c7;
+  margin-bottom: 0;
+}
