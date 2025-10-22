@@ -33,14 +33,17 @@
     <button id="submit-btn">✨ Visualizar</button>
   </div>
 
-  <div class="visualization-wrapper">
+  <div class="visualization-container">
     <main id="canvas-container"></main>
-
-    <div id="navigation-controls" class="navigation-controls">
-      <button id="prev-btn">◀ Anterior</button>
-      <span id="step-counter">Paso: 0 / 0</span>
-      <button id="next-btn">Siguiente ▶</button>
-    </div>
+    <aside class="state-panel">
+      <h2 id="step-title">Descripción del Paso</h2>
+      <p id="step-description">Ingresa dos o tres números y presiona "Visualizar" para comenzar.</p>
+      <div id="navigation-controls" class="navigation-controls">
+        <button id="prev-btn">◀ Anterior</button>
+        <span id="step-counter">Paso: 0 / 0</span>
+        <button id="next-btn">Siguiente ▶</button>
+      </div>
+    </aside>
   </div>
 
   <script src="/js/page1.js"></script>

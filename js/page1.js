@@ -1,5 +1,6 @@
 // --- VARIABLES GLOBALES ---
-let inputA, inputB, inputC, submitBtn, prevBtn, nextBtn, stepCounter, navControls;
+let inputA, inputB, inputC, submitBtn, prevBtn, nextBtn;
+let stepCounter, navControls, stepTitle, stepDescription;
 let originalA, originalB, originalC;
 let mcd = 0;
 let pasos = [];
@@ -43,6 +44,8 @@ function setup() {
   nextBtn = select('#next-btn');
   stepCounter = select('#step-counter');
   navControls = select('#navigation-controls');
+  stepTitle = select('#step-title');
+  stepDescription = select('#step-description');
 
   submitBtn.mousePressed(iniciarVisualizacion);
   prevBtn.mousePressed(pasoAnterior);
@@ -51,11 +54,8 @@ function setup() {
   background(COLOR_FONDO);
   noLoop();
 
-  fill(COLOR_TEXTO);
-  noStroke();
-  textAlign(CENTER, CENTER);
-  textSize(20);
-  text('Ingresa dos o tres números y presiona "Visualizar"', width / 2, height / 2);
+  // Estado inicial del panel de descripción
+  actualizarPanelInfo(null);
 }
 
 // --- DIBUJO PRINCIPAL ---
@@ -63,7 +63,7 @@ function draw() {
   if (!calculando) return;
   background(COLOR_FONDO);
   mostrarPaso(pasoActual);
-  stepCounter.html(`Paso: ${pasoActual + 1} / ${pasos.length}`);
+  actualizarPanelInfo(pasos[pasoActual]);
 }
 
 // --- LÓGICA DE CONTROL ---
@@ -79,6 +79,7 @@ function iniciarVisualizacion() {
 
   pasos = [];
   pasoActual = 0;
+
 
   if (isNaN(originalC) || originalC <= 0) {
     // --- Caso: 2 números ---
@@ -148,31 +149,63 @@ function pasoAnterior() {
   }
 }
 
+// --- ACTUALIZACIÓN DEL PANEL DE INFORMACIÓN ---
+function actualizarPanelInfo(paso) {
+  stepCounter.html(`Paso: ${pasoActual + 1} / ${pasos.length}`);
+
+  if (!paso) {
+    stepTitle.html('Descripción del Paso');
+    stepDescription.html('Ingresa dos o tres números y presiona "Visualizar" para comenzar.');
+    return;
+  }
+
+  stepTitle.html(paso.fase || 'Resultado Final');
+
+  let desc = '';
+  if (paso.esMensaje) {
+    desc = paso.mensaje;
+  } else if (paso.esFinal) {
+    desc = `¡Cálculo completado! ${paso.mensaje}`;
+  } else if (paso.final && paso.b === 0) {
+    desc = `El residuo es 0. El MCD para esta fase es ${paso.a}.`;
+  } else {
+    desc = `Dividimos ${paso.a} entre ${paso.b}.<br><br>`;
+    desc += `El número ${paso.b} cabe <strong>${paso.cociente}</strong> veces en ${paso.a}.<br><br>`;
+    if (paso.resto > 0) {
+      desc += `Queda un residuo de <strong>${paso.resto}</strong>.<br><br>Ahora, el siguiente paso será calcular el MCD de ${paso.b} y ${paso.resto}.`;
+    } else {
+      desc += `La división es exacta (residuo 0).`;
+    }
+  }
+  stepDescription.html(desc);
+}
+
 // --- FUNCIÓN DE DIBUJO ---
 function mostrarPaso(index) {
   const paso = pasos[index];
 
   // Mensajes intermedios y final sin geometría
   if (paso.esMensaje) {
-    mostrarMensaje(paso.mensaje);
+    background(COLOR_FONDO); // Limpia el canvas
+    // El texto se muestra en el panel lateral
     return;
   }
   if (paso.esFinal) {
     mostrarFinal();
     return;
   }
-
+  
   const numA = paso.a;
   const numB = paso.b;
 
   // Paso final de fase (b=0): mostrar cuadrado verde de esa fase
   if (paso.final && numB === 0) {
-    mostrarCuadradoFinalFase(numA, paso.fase);
+    mostrarCuadradoFinalFase(numA);
     return;
   }
 
   // --- Dibujo intermedio ---
-  const escala = min((width * 0.9) / numA, (height * 0.65) / numB);
+  const escala = min((width * 0.9) / numA, (height * 0.8) / numB);
   const w = numA * escala;
   const h = numB * escala;
   const x_inicio = (width - w) / 2;
@@ -186,6 +219,9 @@ function mostrarPaso(index) {
 
   // Cuadrados azules (cociente)
   const tamCuadrado = numB * escala;
+  // Tamaño de texto dinámico basado en el tamaño del cuadrado
+  const textoCuadradoSize = constrain(tamCuadrado / 3, 14, 50);
+
   for (let i = 0; i < paso.cociente; i++) {
     let x = x_inicio + i * tamCuadrado;
 
@@ -199,8 +235,8 @@ function mostrarPaso(index) {
     fill(COLOR_TEXTO);
     noStroke();
     textAlign(CENTER, CENTER);
-    textSize(16);
-    text(`${paso.b}`, x + tamCuadrado / 2, y_inicio + tamCuadrado / 2);
+    textSize(textoCuadradoSize);
+    text(paso.b, x + tamCuadrado / 2, y_inicio + tamCuadrado / 2);
   }
 
   // Rectángulo rojo (resto)
@@ -213,39 +249,20 @@ function mostrarPaso(index) {
     strokeWeight(2);
     rect(x, y_inicio, restoW, tamCuadrado);
 
-    // Etiqueta centrada
+    // Etiqueta centrada con tamaño dinámico
+    const textoRestoSize = constrain(min(restoW, tamCuadrado) / 2.5, 14, 50);
     fill(COLOR_TEXTO);
     noStroke();
     textAlign(CENTER, CENTER);
-    textSize(16);
-    text(`${paso.resto}`, x + restoW / 2, y_inicio + tamCuadrado / 2);
+    textSize(textoRestoSize);
+    text(paso.resto, x + restoW / 2, y_inicio + tamCuadrado / 2);
   }
-
-  // Textos explicativos
-  fill(COLOR_TEXTO);
-  noStroke();
-  textAlign(CENTER);
-  textSize(18);
-
-  const tituloFase = paso.fase || '';
-  if (tituloFase) {
-    text(tituloFase, width / 2, 30);
-  }
-
-  let textoExplicativo = `Paso ${index + 1}: Dividimos ${numA} por ${numB}.`;
-  if (paso.resto > 0) {
-    textoExplicativo += ` Cabe ${paso.cociente} veces y sobran ${paso.resto}.`;
-    text(`Siguiente: MCD(${numB}, ${paso.resto}).`, width / 2, y_inicio + h + 70);
-  } else {
-    textoExplicativo += ` La división es exacta.`;
-  }
-  text(textoExplicativo, width / 2, y_inicio + h + 40);
 }
 
 // --- Dibujo del cuadrado final de una fase ---
-function mostrarCuadradoFinalFase(valor, etiqueta) {
-  const escalaFinal = min(width * 0.35 / valor, height * 0.35 / valor);
-  const tamFinal = valor * escalaFinal;
+function mostrarCuadradoFinalFase(valor) {
+  const escala = min((width * 0.5) / valor, (height * 0.5) / valor);
+  const tamFinal = valor * escala;
   const x = (width - tamFinal) / 2;
   const y = (height - tamFinal) / 2 - 40;
 
@@ -256,31 +273,18 @@ function mostrarCuadradoFinalFase(valor, etiqueta) {
   rect(x, y, tamFinal, tamFinal);
 
   // Etiqueta dentro del cuadrado
+  const textoSize = constrain(tamFinal / 3, 16, 80);
   fill(COLOR_TEXTO);
   noStroke();
   textAlign(CENTER, CENTER);
-  textSize(20);
-  text(`${valor}`, x + tamFinal / 2, y + tamFinal / 2);
-
-  // Texto explicativo debajo
-  textAlign(CENTER);
-  textSize(18);
-  text(`${etiqueta} → MCD = ${valor}`, width / 2, y + tamFinal + 45);
-}
-
-// --- Mensaje intermedio ---
-function mostrarMensaje(msg) {
-  fill(COLOR_TEXTO);
-  noStroke();
-  textAlign(CENTER, CENTER);
-  textSize(20);
-  text(msg, width / 2, height / 2);
+  textSize(textoSize);
+  text(valor, x + tamFinal / 2, y + tamFinal / 2);
 }
 
 // --- Dibujo del resultado final global ---
 function mostrarFinal() {
-  const escalaFinal = min(width * 0.4 / mcd, height * 0.4 / mcd);
-  const tamFinal = mcd * escalaFinal;
+  const escala = min((width * 0.5) / mcd, (height * 0.5) / mcd);
+  const tamFinal = mcd * escala;
   const x = (width - tamFinal) / 2;
   const y = (height - tamFinal) / 2 - 40;
 
@@ -291,18 +295,10 @@ function mostrarFinal() {
   rect(x, y, tamFinal, tamFinal);
 
   // Etiqueta dentro
+  const textoSize = constrain(tamFinal / 3, 16, 80);
   fill(COLOR_TEXTO);
   noStroke();
   textAlign(CENTER, CENTER);
-  textSize(22);
-  text(`${mcd}`, x + tamFinal / 2, y + tamFinal / 2);
-
-  // Texto explicativo debajo
-  textAlign(CENTER);
-  textSize(22);
-  if (isNaN(originalC) || originalC <= 0) {
-    text(`¡MCD(${originalA}, ${originalB}) = ${mcd}!`, width / 2, y + tamFinal + 45);
-  } else {
-    text(`¡MCD(${originalA}, ${originalB}, ${originalC}) = ${mcd}!`, width / 2, y + tamFinal + 45);
-  }
+  textSize(textoSize);
+  text(mcd, x + tamFinal / 2, y + tamFinal / 2);
 }

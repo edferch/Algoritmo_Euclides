@@ -96,29 +96,53 @@ main#canvas-container {
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
 }
 
-/* --- AÑADE ESTO AL FINAL DE TU ARCHIVO style.css --- */
-
-/* Contenedor para el canvas y los controles de navegación */
-.visualization-wrapper {
+/* Contenedor de la visualización (nuevo layout) */
+.visualization-container {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 15px; /* Espacio entre el canvas y los botones */
+  gap: 30px;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 1500px; /* Aumentado para dar espacio al panel */
+  justify-content: center;
 }
 
-/* Estilo para los nuevos controles de navegación */
+/* Panel de Estado y Descripción */
+.state-panel {
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  width: 450px;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+.state-panel h2 {
+  margin-top: 0;
+  color: #3498db;
+  border-bottom: 2px solid #34495e;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+}
+
+.state-panel p#step-description {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #bdc3c7;
+  flex-grow: 1; /* Hace que el párrafo ocupe el espacio disponible */
+}
+
+/* Controles de Navegación (movidos dentro del panel) */
 .navigation-controls {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 20px;
-  background-color: rgba(255, 255, 255, 0.05);
-  padding: 10px 25px;
-  border-radius: 12px;
-  width: fit-content;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-top: 20px;
   visibility: hidden; /* Ocultos por defecto */
 }
 
