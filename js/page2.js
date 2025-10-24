@@ -1,5 +1,5 @@
 // --- VARIABLES GLOBALES ---
-let endNodeSelect, submitBtn, prevBtn, nextBtn, stepTitle, stepDescription, tableContainer, stepCounter, navControls;
+let categoryFilter, endNodeSelect, submitBtn, prevBtn, nextBtn, stepTitle, stepDescription, tableContainer, stepCounter, navControls;
 
 let pasos = [];
 let pasoActual = 0;
@@ -12,11 +12,11 @@ let edgesDataSet = new vis.DataSet();
 
 // Colores para la visualización
 const COLOR_POI = { border: '#e67e22', background: '#e67e22' };
-const COLOR_NORMAL = { border: '#3498db', background: '#3498db' };
-const COLOR_VISITADO = { border: '#2ecc71', background: '#2ecc71' };
+const COLOR_NORMAL = { border: '#D8E0E7', background: '#D8E0E7' };
+const COLOR_VISITADO = { border: '#2ecc71', background: 'rgba(46, 204, 113, 0.5)' };
 const COLOR_ACTUAL = { border: '#f1c40f', background: '#f1c40f' };
 const COLOR_CAMINO = '#e74c3c';
-const COLOR_ARISTA = '#ffffff'; // Cambiado a blanco para mejor contraste sobre un mapa
+const COLOR_ARISTA = '#D8E0E7'; // Cambiado a blanco para mejor contraste sobre un mapa
 
 let nodeMap = {}; // Mapea ID de nodo a índice (ej: 'GUATEMALA' -> 0)
 let adjacencyMatrix = []; // Matriz de adyacencia para los pesos
@@ -90,15 +90,15 @@ function generarGrafoCuadricula() {
   const aristas = [];
   
   const puntosDeInteres = {
-    // (fila, columna) - Se ha sumado 1 a cada fila para añadir una nueva fila arriba
-    '3,0': 'Pollo Campero',
-    '6,0': 'Entrada',
-    '3,1': 'Mcdonalds',
-    '2,2': 'El viejo cafe',
-    '2,3': 'Subway',
-    '3,3': 'Cafe condesa',
-    '1,5': 'La cuevita de los Urquizu',
-    '5,6': 'El adobe'
+    // (fila, columna): { label, category }
+    '3,0': { label: 'Pollo Campero', category: 'Comida Rápida' },
+    '6,0': { label: 'Entrada', category: 'Punto de Partida' },
+    '3,1': { label: 'Mcdonalds', category: 'Comida Rápida' },
+    '2,2': { label: 'El viejo cafe', category: 'Cafés' },
+    '2,3': { label: 'Subway', category: 'Comida Rápida' },
+    '3,3': { label: 'Cafe condesa', category: 'Cafés' },
+    '1,5': { label: 'La cuevita de los Urquizu', category: 'Comida Tradicional' },
+    '5,6': { label: 'El adobe', category: 'Comida Tradicional' }
   };
   
   // Generar nodos
@@ -110,9 +110,10 @@ function generarGrafoCuadricula() {
       
       nodos.push({
         id: id,
-        label: esPOI ? puntosDeInteres[`${r},${c}`] : ' ', // Solo POIs tienen etiqueta visible
+        label: esPOI ? puntosDeInteres[`${r},${c}`].label : ' ', // Solo POIs tienen etiqueta visible
         x: coords.x,
         y: coords.y,
+        category: esPOI ? puntosDeInteres[`${r},${c}`].category : null,
         type: esPOI ? 'poi' : 'normal',
         // Propiedades para Vis-Network
         shape: 'dot',
@@ -185,6 +186,7 @@ function prepararGrafo() {
 // --- LÓGICA DE LA APLICACIÓN ---
 document.addEventListener('DOMContentLoaded', () => {
   // Referencias a elementos del DOM
+  categoryFilter = document.getElementById('category-filter');
   endNodeSelect = document.getElementById('end-node');
   submitBtn = document.getElementById('submit-btn');
   prevBtn = document.getElementById('prev-btn');
@@ -195,22 +197,42 @@ document.addEventListener('DOMContentLoaded', () => {
   stepCounter = document.getElementById('step-counter');
   navControls = document.getElementById('navigation-controls');
 
-  // Poblar los menús desplegables
-  const puntosDeInteres = graph.nodes.filter(n => n.type === 'poi');
-  puntosDeInteres.forEach(node => {
-    // Usamos el 'name' para el texto visible y el 'id' como valor
-    const option2 = new Option(node.label, node.id);
-    endNodeSelect.add(option2);
-  });
+  // Lógica de los filtros
+  populateCategoryFilter();
+  populateDestinationFilter('Todos');
+  categoryFilter.addEventListener('change', (e) => populateDestinationFilter(e.target.value));
   
   // Eventos de los botones
   submitBtn.addEventListener('click', iniciarVisualizacion);
   prevBtn.addEventListener('click', pasoAnterior);
   nextBtn.addEventListener('click', siguientePaso);
 
+
   prepararGrafo();
   inicializarRed();
 });
+
+function populateCategoryFilter() {
+  const categorias = ['Todos', 'Cafés', 'Comida Rápida', 'Comida Tradicional'];
+  categorias.forEach(cat => {
+    const option = new Option(cat, cat);
+    categoryFilter.add(option);
+  });
+}
+
+function populateDestinationFilter(categoria) {
+  endNodeSelect.innerHTML = ''; // Limpiar opciones anteriores
+  const puntosDeInteres = graph.nodes.filter(n => n.type === 'poi' && n.label !== 'Entrada');
+
+  const nodosFiltrados = (categoria === 'Todos')
+    ? puntosDeInteres
+    : puntosDeInteres.filter(n => n.category === categoria);
+
+  nodosFiltrados.forEach(node => {
+    const option = new Option(node.label, node.id);
+    endNodeSelect.add(option);
+  });
+}
 
 function inicializarRed() {
   nodesDataSet.clear();
@@ -247,6 +269,20 @@ function inicializarRed() {
   network.moveTo({
     position: { x: 379, y: 297.5 }, // Centro del canvas (758/2, 595/2)
     scale: 1.0
+  });
+
+  // Evento de clic en un nodo para seleccionarlo como destino
+  network.on('click', function(params) {
+    if (params.nodes.length > 0) {
+      const nodeId = params.nodes[0];
+      const clickedNode = graph.nodes.find(n => n.id === nodeId);
+      // Solo actuar si es un POI y no es la "Entrada"
+      if (clickedNode && clickedNode.type === 'poi' && clickedNode.label !== 'Entrada') {
+        categoryFilter.value = clickedNode.category;
+        populateDestinationFilter(clickedNode.category);
+        endNodeSelect.value = nodeId;
+      }
+    }
   });
 }
 
