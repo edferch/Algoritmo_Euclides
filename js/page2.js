@@ -1,40 +1,162 @@
 // --- VARIABLES GLOBALES ---
-let startNodeSelect, endNodeSelect, submitBtn, prevBtn, nextBtn;
-let stepTitle, stepDescription, tableContainer, stepCounter, navControls;
+let endNodeSelect, submitBtn, prevBtn, nextBtn, stepTitle, stepDescription, tableContainer, stepCounter, navControls;
 
 let pasos = [];
 let pasoActual = 0;
 let calculando = false;
 
+// Variables para Vis-Network
+let network = null;
+let nodesDataSet = new vis.DataSet();
+let edgesDataSet = new vis.DataSet();
+
+// Colores para la visualización
+const COLOR_POI = { border: '#e67e22', background: '#e67e22' };
+const COLOR_NORMAL = { border: '#3498db', background: '#3498db' };
+const COLOR_VISITADO = { border: '#2ecc71', background: '#2ecc71' };
+const COLOR_ACTUAL = { border: '#f1c40f', background: '#f1c40f' };
+const COLOR_CAMINO = '#e74c3c';
+const COLOR_ARISTA = '#ffffff'; // Cambiado a blanco para mejor contraste sobre un mapa
+
 let nodeMap = {}; // Mapea ID de nodo a índice (ej: 'GUATEMALA' -> 0)
 let adjacencyMatrix = []; // Matriz de adyacencia para los pesos
 
-// --- DATOS DEL GRAFO (LUGARES TURÍSTICOS DE GUATEMALA) ---
-const graph = {
-  nodes: [
-    { id: 'GUATEMALA', name: 'Cd. de Guatemala', x: 450, y: 450 },
-    { id: 'ANTIGUA', name: 'Antigua G.', x: 380, y: 460 },
-    { id: 'PANAJACHEL', name: 'Panajachel', x: 300, y: 380 },
-    { id: 'XELA', name: 'Quetzaltenango', x: 220, y: 350 },
-    { id: 'COBAN', name: 'Cobán', x: 500, y: 250 },
-    { id: 'TIKAL', name: 'Tikal (Flores)', x: 650, y: 100 },
-    { id: 'LIVINGSTON', name: 'Livingston', x: 750, y: 280 },
-  ],
-  edges: [
-    { from: 'GUATEMALA', to: 'ANTIGUA', weight: 40 },
-    { from: 'GUATEMALA', to: 'PANAJACHEL', weight: 115 },
-    { from: 'GUATEMALA', to: 'COBAN', weight: 215 },
-    { from: 'GUATEMALA', to: 'LIVINGSTON', weight: 295 },
-    { from: 'GUATEMALA', to: 'XELA', weight: 200 },
-    { from: 'ANTIGUA', to: 'PANAJACHEL', weight: 80 },
-    { from: 'ANTIGUA', to: 'XELA', weight: 160 },
-    { from: 'PANAJACHEL', to: 'XELA', weight: 90 },
-    { from: 'XELA', to: 'COBAN', weight: 330 },
-    { from: 'COBAN', to: 'TIKAL', weight: 210 },
-    { from: 'COBAN', to: 'LIVINGSTON', weight: 165 },
-    { from: 'LIVINGSTON', to: 'TIKAL', weight: 240 },
-  ]
-};
+// --- GENERADOR DEL GRAFO EN CUADRÍCULA ---
+function generarGrafoCuadricula() {
+  const filas = 7; // Aumentado de 6 a 7 para añadir una fila arriba
+  const columnas = 8; // Aumentado de 7 a 8 para añadir una columna a la derecha
+  
+  // Coordenadas finales proporcionadas por el usuario
+  const nuevasCoordenadas = {
+    'R0C0': { x: -20, y: 29 },
+    'R0C1': { x: 97, y: 30 },
+    'R0C2': { x: 182, y: 27 },
+    'R0C3': { x: 271, y: 26 },
+    'R0C4': { x: 358, y: 30 },
+    'R0C5': { x: 450, y: 21 },
+    'R0C6': { x: 536, y: 24 },
+    'R0C7': { x: 667, y: 13 },
+    'R1C0': { x: -34, y: 156 },
+    'R1C1': { x: 99, y: 155 },
+    'R1C2': { x: 185, y: 159 },
+    'R1C3': { x: 272, y: 155 },
+    'R1C4': { x: 358, y: 149 },
+    'R1C5': { x: 448, y: 146 },
+    'R1C6': { x: 541, y: 145 },
+    'R1C7': { x: 664, y: 143 },
+    'R2C0': { x: -33, y: 244 },
+    'R2C1': { x: 100, y: 247 },
+    'R2C2': { x: 184, y: 244 },
+    'R2C3': { x: 270, y: 246 },
+    'R2C4': { x: 355, y: 237 },
+    'R2C5': { x: 448, y: 238 },
+    'R2C6': { x: 534, y: 241 },
+    'R2C7': { x: 663, y: 238 },
+    'R3C0': { x: -36, y: 334 },
+    'R3C1': { x: 100, y: 333 },
+    'R3C2': { x: 183, y: 334 },
+    'R3C3': { x: 272, y: 330 },
+    'R3C4': { x: 361, y: 328 },
+    'R3C5': { x: 450, y: 328 },
+    'R3C6': { x: 535, y: 322 },
+    'R3C7': { x: 662, y: 323 },
+    'R4C0': { x: -39, y: 428 },
+    'R4C1': { x: 95, y: 423 },
+    'R4C2': { x: 182, y: 422 },
+    'R4C3': { x: 272, y: 416 },
+    'R4C4': { x: 353, y: 419 },
+    'R4C5': { x: 450, y: 410 },
+    'R4C6': { x: 536, y: 411 },
+    'R4C7': { x: 662, y: 408 },
+    'R5C0': { x: -39, y: 511 },
+    'R5C1': { x: 94, y: 510 },
+    'R5C2': { x: 184, y: 510 },
+    'R5C3': { x: 272, y: 503 },
+    'R5C4': { x: 361, y: 507 },
+    'R5C5': { x: 445, y: 499 },
+    'R5C6': { x: 532, y: 498 },
+    'R5C7': { x: 660, y: 493 },
+    'R6C0': { x: -42, y: 595 },
+    'R6C1': { x: 97, y: 597 },
+    'R6C2': { x: 184, y: 595 },
+    'R6C3': { x: 270, y: 588 },
+    'R6C4': { x: 361, y: 584 },
+    'R6C5': { x: 447, y: 587 },
+    'R6C6': { x: 536, y: 586 },
+    'R6C7': { x: 655, y: 579 },
+  };
+  
+  const nodos = [];
+  const aristas = [];
+  
+  const puntosDeInteres = {
+    // (fila, columna) - Se ha sumado 1 a cada fila para añadir una nueva fila arriba
+    '3,0': 'Pollo Campero',
+    '6,0': 'Entrada',
+    '3,1': 'Mcdonalds',
+    '2,2': 'El viejo cafe',
+    '2,3': 'Subway',
+    '3,3': 'Cafe condesa',
+    '1,5': 'La cuevita de los Urquizu',
+    '5,6': 'El adobe'
+  };
+  
+  // Generar nodos
+  for (let r = 0; r < filas; r++) {
+    for (let c = 0; c < columnas; c++) {
+      const id = `R${r}C${c}`;
+      const esPOI = puntosDeInteres.hasOwnProperty(`${r},${c}`);
+      const coords = nuevasCoordenadas[id] || { x: 0, y: 0 };
+      
+      nodos.push({
+        id: id,
+        label: esPOI ? puntosDeInteres[`${r},${c}`] : ' ', // Solo POIs tienen etiqueta visible
+        x: coords.x,
+        y: coords.y,
+        type: esPOI ? 'poi' : 'normal',
+        // Propiedades para Vis-Network
+        shape: 'dot',
+        size: esPOI ? 12 : 5,
+        color: esPOI ? COLOR_POI : COLOR_NORMAL,
+        font: { color: '#FFFFFF', size: 14 },
+      });
+
+    }
+  }
+
+  // Generar aristas (calles)
+  for (let r = 0; r < filas; r++) {
+    for (let c = 0; c < columnas; c++) {
+      const fromId = `R${r}C${c}`;
+      // Conexión a la derecha
+      if (c < columnas - 1) {
+        const toId = `R${r}C${c + 1}`;
+        const weight = ((r * 13 + c * 7) % 4) + 1;
+        aristas.push({ 
+          id: `${fromId}_${toId}`, from: fromId, to: toId, weight: weight,
+          // Propiedades para Vis-Network
+          label: `${weight}km`,
+          color: { color: COLOR_ARISTA, highlight: COLOR_CAMINO },
+          width: 4,
+        });
+      }
+      // Conexión hacia abajo
+      if (r < filas - 1) {
+        const toId = `R${r + 1}C${c}`;
+        const weight = ((r * 17 + c * 5) % 5) + 1; // Fórmula determinista para pesos 1-5
+        aristas.push({ 
+          id: `${fromId}_${toId}`, from: fromId, to: toId, weight: weight,
+          label: `${weight}km`,
+          color: { color: COLOR_ARISTA, highlight: COLOR_CAMINO },
+          width: 4,
+        });
+      }
+    }
+  }
+  return { nodes: nodos, edges: aristas };
+}
+
+const graph = generarGrafoCuadricula();
 
 // --- LÓGICA DE PREPARACIÓN ---
 function prepararGrafo() {
@@ -60,68 +182,81 @@ function prepararGrafo() {
   });
 }
 
-// --- CONFIGURACIÓN INICIAL (p5.js) ---
-function setup() {
-  let canvasContainer = select('#canvas-container');
-  let canvas = createCanvas(900, 600);
-  canvas.parent(canvasContainer);
-
-  prepararGrafo();
-
+// --- LÓGICA DE LA APLICACIÓN ---
+document.addEventListener('DOMContentLoaded', () => {
   // Referencias a elementos del DOM
-  startNodeSelect = select('#start-node');
-  endNodeSelect = select('#end-node');
-  submitBtn = select('#submit-btn');
-  prevBtn = select('#prev-btn');
-  nextBtn = select('#next-btn');
-  stepTitle = select('#step-title');
-  stepDescription = select('#step-description');
-  tableContainer = select('#table-container');
-  stepCounter = select('#step-counter');
-  navControls = select('#navigation-controls');
+  endNodeSelect = document.getElementById('end-node');
+  submitBtn = document.getElementById('submit-btn');
+  prevBtn = document.getElementById('prev-btn');
+  nextBtn = document.getElementById('next-btn');
+  stepTitle = document.getElementById('step-title');
+  stepDescription = document.getElementById('step-description');
+  tableContainer = document.getElementById('table-container');
+  stepCounter = document.getElementById('step-counter');
+  navControls = document.getElementById('navigation-controls');
 
   // Poblar los menús desplegables
-  graph.nodes.forEach(node => {
-    startNodeSelect.option(node.name, node.id);
-    endNodeSelect.option(node.name, node.id);
+  const puntosDeInteres = graph.nodes.filter(n => n.type === 'poi');
+  puntosDeInteres.forEach(node => {
+    // Usamos el 'name' para el texto visible y el 'id' como valor
+    const option2 = new Option(node.label, node.id);
+    endNodeSelect.add(option2);
   });
   
   // Eventos de los botones
-  submitBtn.mousePressed(iniciarVisualizacion);
-  prevBtn.mousePressed(pasoAnterior);
-  nextBtn.mousePressed(siguientePaso);
+  submitBtn.addEventListener('click', iniciarVisualizacion);
+  prevBtn.addEventListener('click', pasoAnterior);
+  nextBtn.addEventListener('click', siguientePaso);
 
-  noLoop();
-  drawEstadoInicial();
+  prepararGrafo();
+  inicializarRed();
+});
+
+function inicializarRed() {
+  nodesDataSet.clear();
+  edgesDataSet.clear();
+  nodesDataSet.add(graph.nodes);
+  edgesDataSet.add(graph.edges);
+
+  const container = document.getElementById('network-container');
+  const data = { nodes: nodesDataSet, edges: edgesDataSet };
+  const options = {
+    physics: false,
+    interaction: {
+      dragNodes: false,  // Deshabilitado para el uso normal
+      dragView: false,  // Deshabilita el arrastre del lienzo (pan)
+      zoomView: false,  // Deshabilita el zoom del lienzo
+    },
+    layout: {
+      // Esto asegura que las coordenadas X, Y que definimos se usen directamente
+      // sin que la librería intente aplicar ninguna física o diseño automático.
+      hierarchical: false
+    },
+    nodes: {
+      font: { color: '#FFFFFF' }
+    },
+    edges: {
+      font: { color: '#FFFFFF', strokeWidth: 0, align: 'top' }
+    }
+  };
+  network = new vis.Network(container, data, options);
+
+  // Fijamos la vista inicial para que coincida exactamente con el fondo
+  network.moveTo({
+    position: { x: 379, y: 297.5 }, // Centro del canvas (758/2, 595/2)
+    scale: 1.0
+  });
 }
 
-// --- DIBUJO PRINCIPAL (p5.js) ---
-function draw() {
-  if (!calculando) return;
-  background('#1E1E1E'); // Fondo oscuro del canvas
-  drawMapBackground(); // Dibuja la nueva silueta del mapa
-  
-  const paso = pasos[pasoActual];
-  actualizarUI(paso);
-  drawGraph(paso);
-
-  if (paso.fase === 'Finalizado') {
-    const endNodeIndex = nodeMap[endNodeSelect.value()];
-    const finalPath = reconstruirCamino(paso.predecesores, endNodeIndex);
-    highlightPath(finalPath);
-  }
-}
-
-function drawEstadoInicial() {
-  background('#1E1E1E');
-  drawMapBackground();
-  drawGraph(); // Dibuja el grafo sin etiquetas
-}
-
-// --- LÓGICA DE LA APLICACIÓN ---
 function iniciarVisualizacion() {
-  const startNodeId = startNodeSelect.value();
-  const endNodeId = endNodeSelect.value();
+  // Encontrar el nodo "Entrada" programáticamente
+  const entradaNode = graph.nodes.find(node => node.label === 'Entrada');
+  if (!entradaNode) {
+    alert('Error: No se pudo encontrar el nodo de "Entrada".');
+    return;
+  }
+  const startNodeId = entradaNode.id;
+  const endNodeId = endNodeSelect.value;
 
   if (startNodeId === endNodeId) {
     alert('El origen y el destino no pueden ser el mismo.');
@@ -131,21 +266,21 @@ function iniciarVisualizacion() {
   pasos = generarPasosDijkstra(startNodeId, endNodeId);
   pasoActual = 0;
   calculando = true;
-  navControls.style('visibility', 'visible');
-  redraw();
+  navControls.style.visibility = 'visible';
+  actualizarVisualizacion();
 }
 
 function siguientePaso() {
   if (pasoActual < pasos.length - 1) {
     pasoActual++;
-    redraw();
+    actualizarVisualizacion();
   }
 }
 
 function pasoAnterior() {
   if (pasoActual > 0) {
     pasoActual--;
-    redraw();
+    actualizarVisualizacion();
   }
 }
 
@@ -167,7 +302,7 @@ function generarPasosDijkstra(startId, endId) {
     visitados: [...visitados],
     verticeActual: null,
     fase: 'Inicialización',
-    descripcion: `Se inicializan todas las distancias a infinito, excepto el origen (${startId}) que es 0. Aún no hay predecesores.`
+    descripcion: `Se inicializan todas las distancias a infinito, excepto el origen (${graph.nodes[startIndex].label}) que es 0. Aún no hay predecesores.`
   });
 
   for (let count = 0; count < n; count++) {
@@ -182,13 +317,14 @@ function generarPasosDijkstra(startId, endId) {
     if (u === -1 || distancias[u] === Infinity) break;
 
     const u_id = graph.nodes[u].id;
+    const u_label = graph.nodes[u].label.trim() || u_id;
     pasosGenerados.push({
       distancias: [...distancias],
       predecesores: [...predecesores],
       visitados: [...visitados],
       verticeActual: u,
-      fase: `Selección del Vértice ${u_id}`,
-      descripcion: `Se selecciona el vértice no visitado con la menor distancia acumulada: ${u_id} (Distancia: ${distancias[u]}).`
+      fase: `Selección del Vértice ${u_label}`,
+      descripcion: `Se selecciona el vértice no visitado con la menor distancia acumulada: ${u_label} (Distancia: ${distancias[u]}).`
     });
 
     // 3. Marcar como visitado
@@ -209,8 +345,8 @@ function generarPasosDijkstra(startId, endId) {
       predecesores: [...predecesores],
       visitados: [...visitados],
       verticeActual: u,
-      fase: `Actualización desde ${u_id}`,
-      descripcion: `Se actualizan las distancias de los vecinos de ${u_id} y se marca como visitado.`
+      fase: `Actualización desde ${u_label}`,
+      descripcion: `Se actualizan las distancias de los vecinos de ${u_label} y se marca como visitado.`
     });
   }
 
@@ -218,7 +354,7 @@ function generarPasosDijkstra(startId, endId) {
   const endNodeIndex = nodeMap[endId];
   const finalPath = reconstruirCamino(predecesores, endNodeIndex);
   const finalDistance = distancias[endNodeIndex];
-  const pathString = finalPath.map(index => graph.nodes[index].id).join(' → ');
+  const pathString = finalPath.map(index => graph.nodes[index].label).join(' → ');
 
   pasosGenerados.push({
     distancias: [...distancias],
@@ -244,124 +380,94 @@ function reconstruirCamino(predecesores, endNodeIndex) {
 
 // --- FUNCIONES DE ACTUALIZACIÓN DE UI ---
 function actualizarUI(paso) {
-  stepTitle.html(paso.fase);
-  stepDescription.html(paso.descripcion);
-  stepCounter.html(`Paso: ${pasoActual + 1} / ${pasos.length}`);
+  stepTitle.innerHTML = paso.fase;
+  stepDescription.innerHTML = paso.descripcion;
+  stepCounter.innerHTML = `Paso: ${pasoActual + 1} / ${pasos.length}`;
   crearTabla(paso);
 }
 
 function crearTabla(paso) {
   let tablaHTML = '<table><thead><tr><th>Vértice</th><th>Estado</th><th>Distancia</th><th>Predecesor</th></tr></thead><tbody>';
   for (let i = 0; i < graph.nodes.length; i++) {
-    const node = graph.nodes[i];
+    const node = graph.nodes[i]; // Usamos el `graph.nodes` original para la tabla
+    if (node.type !== 'poi') continue; // Solo mostrar POIs en la tabla
+
     const estado = paso.visitados[i] ? '✔️ Visitado' : '❌ No Visitado';
     const distancia = paso.distancias[i] === Infinity ? '∞' : paso.distancias[i];
-    const predecesor = paso.predecesores[i] !== null ? graph.nodes[paso.predecesores[i]].id : '-';
-    
+    const predecesor = paso.predecesores[i] !== null ? graph.nodes[paso.predecesores[i]].label : '-';
+
     let rowClass = '';
     if (paso.visitados[i]) rowClass = 'visited-row';
     if (paso.verticeActual === i) rowClass = 'current-row';
 
-    tablaHTML += `<tr class="${rowClass}"><td>${node.id}</td><td>${estado}</td><td>${distancia}</td><td>${predecesor}</td></tr>`;
+    tablaHTML += `<tr class="${rowClass}"><td>${node.label}</td><td>${estado}</td><td>${distancia}</td><td>${predecesor}</td></tr>`;
   }
   tablaHTML += '</tbody></table>';
-  tableContainer.html(tablaHTML);
+  tableContainer.innerHTML = tablaHTML;
 }
 
-// --- FUNCIONES DE DIBUJO ---
-function drawMapBackground() {
-  fill('rgba(44, 62, 80, 0.7)');
-  noStroke();
-  beginShape();
-  vertex(340, 40); vertex(780, 40); vertex(800, 150); vertex(860, 250);
-  vertex(820, 350); vertex(520, 560); vertex(350, 560); vertex(180, 480);
-  vertex(150, 350); vertex(300, 280);
-  endShape(CLOSE);
-}
+// --- FUNCIONES DE VISUALIZACIÓN CON VIS-NETWORK ---
+function actualizarVisualizacion() {
+  const paso = pasos[pasoActual];
+  actualizarUI(paso);
 
-function drawGraph(paso) {
-    // Dibujar aristas (carreteras)
-    stroke('rgba(255, 255, 255, 0.3)'); // Blanco semitransparente
-    strokeWeight(2);
-    graph.edges.forEach(edge => {
-        const fromNode = graph.nodes.find(n => n.id === edge.from);
-        const toNode = graph.nodes.find(n => n.id === edge.to);
-        line(fromNode.x, fromNode.y, toNode.x, toNode.y);
+  // 1. Resetear todos los nodos y aristas a su estado base
+  const nodeUpdates = graph.nodes.map(n => ({
+    id: n.id,
+    color: n.type === 'poi' ? COLOR_POI : COLOR_NORMAL,
+    size: n.type === 'poi' ? 12 : 5,
+  }));
+  nodesDataSet.update(nodeUpdates);
 
-        // Dibujar peso de la arista
-        fill('#f0f0f0');
-        noStroke();
-        textSize(12);
-        textAlign(CENTER, CENTER);
-        const midX = (fromNode.x + toNode.x) / 2;
-        const midY = (fromNode.y + toNode.y) / 2;
-        text(`${edge.weight}km`, midX, midY - 10);
-    });
+  const edgeUpdates = graph.edges.map(e => ({
+    id: e.id,
+    color: { color: COLOR_ARISTA, highlight: COLOR_CAMINO },
+    width: 4,
+  }));
+  edgesDataSet.update(edgeUpdates);
 
-    // Dibujar nodos y etiquetas
-    graph.nodes.forEach((node, i) => {
-        let nodeColor = '#3498db'; // Azul por defecto
-        let nodeSize = 45;
-
-        if (paso) {
-            if (paso.visitados[i]) nodeColor = '#2ecc71'; // Verde si está visitado
-            if (paso.verticeActual === i) nodeColor = '#f1c40f'; // Amarillo si es el actual
-        }
-
-        stroke(nodeColor);
-        strokeWeight(4);
-        fill('#1E1E1E');
-        ellipse(node.x, node.y, nodeSize, nodeSize);
-
-        // Dibujar nombre de la ciudad
-        noStroke();
-        fill('#FFFFFF');
-        textSize(14);
-        textAlign(CENTER, CENTER);
-        text(node.name, node.x, node.y + 38);
-
-        // Dibujar etiqueta de Dijkstra (distancia, predecesor)
-        if (paso) {
-            const dist = paso.distancias[i] === Infinity ? '∞' : paso.distancias[i];
-            const pred = paso.predecesores[i] !== null ? graph.nodes[paso.predecesores[i]].id.substring(0, 1) : '-';
-            fill(nodeColor);
-            textSize(12);
-            text(`(${dist}, ${pred})`, node.x, node.y);
-        }
-    });
-}
-
-function highlightPath(pathIndices) {
-  // Resaltar aristas del camino
-  for (let i = 0; i < pathIndices.length - 1; i++) {
-    const fromNode = graph.nodes[pathIndices[i]];
-    const toNode = graph.nodes[pathIndices[i + 1]];
-    stroke('#e74c3c'); // Rojo brillante para el camino final
-    strokeWeight(5);
-    line(fromNode.x, fromNode.y, toNode.x, toNode.y);
+  // 2. Colorear nodos según el estado del paso
+  const updates = [];
+  for (let i = 0; i < graph.nodes.length; i++) {
+    const nodeId = graph.nodes[i].id;
+    if (paso.visitados[i]) {
+      updates.push({ id: nodeId, color: COLOR_VISITADO });
+    }
   }
+  if (paso.verticeActual !== null) {
+    const actualNodeId = graph.nodes[paso.verticeActual].id;
+    updates.push({ id: actualNodeId, color: COLOR_ACTUAL, size: 15 });
+  }
+  nodesDataSet.update(updates);
 
-  // Resaltar nodos del camino (hacerlos un poco más grandes)
-  pathIndices.forEach(nodeIndex => {
-    const node = graph.nodes[nodeIndex];
-    stroke('#e74c3c');
-    strokeWeight(4);
-    fill('#1E1E1E');
-    ellipse(node.x, node.y, 50, 50);
+  // 3. Si es el paso final, resaltar el camino
+  if (paso.fase === 'Finalizado') {
+    const endNodeIndex = nodeMap[endNodeSelect.value];
+    const finalPath = reconstruirCamino(paso.predecesores, endNodeIndex);
+    highlightPath(finalPath);
+  }
+}
 
-    // Redibujar la etiqueta del nodo final para que se vea
-    const paso = pasos[pasoActual];
-    const dist = paso.distancias[nodeIndex] === Infinity ? '∞' : paso.distancias[nodeIndex];
-    const pred = paso.predecesores[nodeIndex] !== null ? graph.nodes[paso.predecesores[nodeIndex]].id.substring(0, 1) : '-';
-    fill('#e74c3c');
-    textSize(12);
-    text(`(${dist}, ${pred})`, node.x, node.y);
+function highlightPath(pathIndices) {  
+  // Resaltar aristas del camino final
+  const edgeUpdates = [];
+  for (let i = 0; i < pathIndices.length - 1; i++) {
+    const fromId = graph.nodes[pathIndices[i]].id;
+    const toId = graph.nodes[pathIndices[i+1]].id;
+    // Buscar la arista en ambas direcciones
+    let edgeId = `${fromId}_${toId}`;
+    if (!edgesDataSet.get(edgeId)) {
+      edgeId = `${toId}_${fromId}`;
+    }
+    edgeUpdates.push({ id: edgeId, color: { color: COLOR_CAMINO }, width: 7 });
+  }
+  edgesDataSet.update(edgeUpdates);
 
-    // Redibujar nombre
-    noStroke();
-    fill('#FFFFFF');
-    textSize(14);
-    textAlign(CENTER, CENTER);
-    text(node.name, node.x, node.y + 38);
-  });
+  // Resaltar nodos del camino final
+  const nodeUpdates = pathIndices.map(nodeIndex => ({
+    id: graph.nodes[nodeIndex].id,
+    color: { border: COLOR_CAMINO, background: COLOR_CAMINO },
+    size: graph.nodes[nodeIndex].type === 'poi' ? 15 : 8,
+  }));
+  nodesDataSet.update(nodeUpdates);
 }

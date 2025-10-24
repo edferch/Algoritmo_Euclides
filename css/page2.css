@@ -95,17 +95,22 @@ button:hover {
   display: flex;
   gap: 30px;
   align-items: flex-start;
-  width: 100%;
-  max-width: 1200px;
+  width: 95%; /* Usar un porcentaje del ancho de la ventana */
+  max-width: 1800px; /* Aumentar el ancho máximo */
   justify-content: center;
 }
 
 /* Contenedor del Canvas */
-main#canvas-container {
+main#network-container {
+  width: 758px; /* Ancho exacto de la imagen de fondo */
+  height: 595px; /* Alto exacto de la imagen de fondo */
   border-radius: 12px;
-  overflow: hidden; /* Asegura que el canvas no se salga de los bordes redondeados */
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  /* --- Cambios para el fondo de mapa --- */
+  background-image: url('../img/mapa_fondo.png'); /* ¡Asegúrate de que esta ruta y nombre de archivo sean correctos! */
+  background-size: 100% 100%; /* Estira la imagen para que cubra exactamente el contenedor */
+  background-position: center; /* Centra la imagen */
 }
 
 /* Panel de Estado y Tabla */

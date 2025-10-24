@@ -3,10 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Visualizador del Algoritmo de Dijkstra</title>
+  <title>Visualizador Avanzado del Algoritmo de Dijkstra</title>
   
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
+  <!-- Librería Vis-Network para visualización de grafos -->
+  <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+  <link href="https://unpkg.com/vis-network/styles/vis-network.min.css" rel="stylesheet" type="text/css" />
+
   <link rel="stylesheet" type="text/css" href="css/page2.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,24 +16,21 @@
 </head>
 <body>
   <header>
-    <h1>Algoritmo de Dijkstra: Rutas en Guatemala</h1>
-    <p>Encuentra la ruta más corta entre dos lugares turísticos.</p>
+    <h1>Algoritmo de Dijkstra: Mapa Urbano Interactivo</h1>
+    <p>Encuentra la ruta más corta entre dos puntos de interés.</p>
   </header>
   
   <div class="controls">
-    <div class="input-group">
-      <label for="start-node">📍 Origen</label>
-      <select id="start-node"></select>
-    </div>
     <div class="input-group">
       <label for="end-node">🏁 Destino</label>
       <select id="end-node"></select>
     </div>
     <button id="submit-btn">✨ Visualizar Paso a Paso</button>
+    <button id="export-coords-btn" style="background: #27ae60;">Exportar Coordenadas</button>
   </div>
   
   <div class="visualization-container">
-    <main id="canvas-container"></main>
+    <main id="network-container"></main>
     <aside class="state-panel">
       <h2 id="step-title">Estado del Algoritmo</h2>
       <p id="step-description">Selecciona un origen y destino y presiona "Visualizar".</p>
