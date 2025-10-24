@@ -207,7 +207,6 @@ document.addEventListener('DOMContentLoaded', () => {
   prevBtn.addEventListener('click', pasoAnterior);
   nextBtn.addEventListener('click', siguientePaso);
 
-
   prepararGrafo();
   inicializarRed();
 });
@@ -268,7 +267,8 @@ function inicializarRed() {
   // Fijamos la vista inicial para que coincida exactamente con el fondo
   network.moveTo({
     position: { x: 379, y: 297.5 }, // Centro del canvas (758/2, 595/2)
-    scale: 1.0
+    scale: 1.0,
+    offset: { x: 0, y: 0 } // Asegura que no haya desplazamiento adicional
   });
 
   // Evento de clic en un nodo para seleccionarlo como destino
