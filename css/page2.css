@@ -102,8 +102,8 @@ button:hover {
 
 /* Contenedor del Canvas */
 main#network-container {
-  width: 758px; /* Ancho exacto de la imagen de fondo */
-  height: 595px; /* Alto exacto de la imagen de fondo */
+  width: 1000px; /* Aumentado para una visualización más grande */
+  height: 785px; /* Aumentado para una visualización más grande, manteniendo la proporción */
   flex-shrink: 0;
   border-radius: 12px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);

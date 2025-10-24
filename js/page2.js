@@ -26,64 +26,15 @@ function generarGrafoCuadricula() {
   const filas = 7; // Aumentado de 6 a 7 para añadir una fila arriba
   const columnas = 8; // Aumentado de 7 a 8 para añadir una columna a la derecha
   
-  // Coordenadas finales proporcionadas por el usuario
+  // Coordenadas escaladas para el nuevo tamaño del contenedor (1000x785)
   const nuevasCoordenadas = {
-    'R0C0': { x: 39, y: 29 },
-    'R0C1': { x: 158, y: 28 },
-    'R0C2': { x: 239, y: 27 },
-    'R0C3': { x: 322, y: 26 },
-    'R0C4': { x: 406, y: 26 },
-    'R0C5': { x: 491, y: 26 },
-    'R0C6': { x: 572, y: 22 },
-    'R0C7': { x: 693, y: 18 },
-    'R1C0': { x: 36, y: 149 },
-    'R1C1': { x: 160, y: 149 },
-    'R1C2': { x: 239, y: 149 },
-    'R1C3': { x: 322, y: 147 },
-    'R1C4': { x: 405, y: 145 },
-    'R1C5': { x: 487, y: 141 },
-    'R1C6': { x: 572, y: 141 },
-    'R1C7': { x: 692, y: 138 },
-    'R2C0': { x: 33, y: 231 },
-    'R2C1': { x: 160, y: 232 },
-    'R2C2': { x: 239, y: 230 },
-    'R2C3': { x: 324, y: 231 },
-    'R2C4': { x: 406, y: 229 },
-    'R2C5': { x: 488, y: 227 },
-    'R2C6': { x: 572, y: 224 },
-    'R2C7': { x: 692, y: 221 },
-    'R3C0': { x: 33, y: 315 },
-    'R3C1': { x: 159, y: 315 },
-    'R3C2': { x: 239, y: 313 },
-    'R3C3': { x: 326, y: 311 },
-    'R3C4': { x: 406, y: 310 },
-    'R3C5': { x: 488, y: 308 },
-    'R3C6': { x: 572, y: 308 },
-    'R3C7': { x: 692, y: 306 },
-    'R4C0': { x: 30, y: 406 },
-    'R4C1': { x: 158, y: 401 },
-    'R4C2': { x: 239, y: 399 },
-    'R4C3': { x: 324, y: 393 },
-    'R4C4': { x: 406, y: 394 },
-    'R4C5': { x: 488, y: 391 },
-    'R4C6': { x: 572, y: 388 },
-    'R4C7': { x: 690, y: 385 },
-    'R5C0': { x: 28, y: 487 },
-    'R5C1': { x: 157, y: 484 },
-    'R5C2': { x: 240, y: 482 },
-    'R5C3': { x: 324, y: 479 },
-    'R5C4': { x: 407, y: 477 },
-    'R5C5': { x: 489, y: 472 },
-    'R5C6': { x: 572, y: 469 },
-    'R5C7': { x: 689, y: 466 },
-    'R6C0': { x: 25, y: 570 },
-    'R6C1': { x: 157, y: 566 },
-    'R6C2': { x: 240, y: 562 },
-    'R6C3': { x: 324, y: 560 },
-    'R6C4': { x: 408, y: 556 },
-    'R6C5': { x: 490, y: 556 },
-    'R6C6': { x: 572, y: 554 },
-    'R6C7': { x: 689, y: 547 },
+    'R0C0': { x: 51, y: 38 }, 'R0C1': { x: 208, y: 37 }, 'R0C2': { x: 315, y: 36 }, 'R0C3': { x: 425, y: 34 }, 'R0C4': { x: 536, y: 34 }, 'R0C5': { x: 648, y: 34 }, 'R0C6': { x: 755, y: 29 }, 'R0C7': { x: 914, y: 24 },
+    'R1C0': { x: 47, y: 197 }, 'R1C1': { x: 211, y: 197 }, 'R1C2': { x: 315, y: 197 }, 'R1C3': { x: 425, y: 194 }, 'R1C4': { x: 535, y: 192 }, 'R1C5': { x: 641, y: 187 }, 'R1C6': { x: 755, y: 187 }, 'R1C7': { x: 913, y: 183 },
+    'R2C0': { x: 43, y: 305 }, 'R2C1': { x: 211, y: 306 }, 'R2C2': { x: 315, y: 303 }, 'R2C3': { x: 427, y: 305 }, 'R2C4': { x: 536, y: 302 }, 'R2C5': { x: 643, y: 300 }, 'R2C6': { x: 755, y: 296 }, 'R2C7': { x: 913, y: 292 },
+    'R3C0': { x: 43, y: 414 }, 'R3C1': { x: 209, y: 414 }, 'R3C2': { x: 315, y: 411 }, 'R3C3': { x: 429, y: 408 }, 'R3C4': { x: 536, y: 407 }, 'R3C5': { x: 643, y: 404 }, 'R3C6': { x: 755, y: 404 }, 'R3C7': { x: 913, y: 401 },
+    'R4C0': { x: 39, y: 535 }, 'R4C1': { x: 208, y: 528 }, 'R4C2': { x: 315, y: 525 }, 'R4C3': { x: 427, y: 517 }, 'R4C4': { x: 536, y: 519 }, 'R4C5': { x: 643, y: 514 }, 'R4C6': { x: 755, y: 510 }, 'R4C7': { x: 910, y: 506 },
+    'R5C0': { x: 37, y: 642 }, 'R5C1': { x: 207, y: 638 }, 'R5C2': { x: 316, y: 635 }, 'R5C3': { x: 427, y: 628 }, 'R5C4': { x: 537, y: 625 }, 'R5C5': { x: 645, y: 619 }, 'R5C6': { x: 755, y: 615 }, 'R5C7': { x: 910, y: 611 },
+    'R6C0': { x: 33, y: 750 }, 'R6C1': { x: 207, y: 745 }, 'R6C2': { x: 316, y: 739 }, 'R6C3': { x: 425, y: 730 }, 'R6C4': { x: 537, y: 725 }, 'R6C5': { x: 646, y: 725 }, 'R6C6': { x: 755, y: 722 }, 'R6C7': { x: 908, y: 713 },
   };
   
   const nodos = [];
@@ -119,7 +70,6 @@ function generarGrafoCuadricula() {
         shape: 'dot',
         size: esPOI ? 12 : 5,
         color: esPOI ? COLOR_POI : COLOR_NORMAL,
-        font: { color: '#FFFFFF', size: 14 },
       });
 
     }
@@ -256,17 +206,17 @@ function inicializarRed() {
     // Desactiva el redimensionamiento automático para mantener la alineación con la imagen de fondo
     autoResize: false,
     nodes: {
-      font: { color: '#FFFFFF' }
+      font: { color: '#000000', weight: 'bold', size: 15} // Nombres de nodos: negro y negrita
     },
     edges: {
-      font: { color: '#FFFFFF', strokeWidth: 0, align: 'top' }
+      font: { color: '#000000', strokeWidth: 0, align: 'middle', weight: 'normal', size: 8 } // Kilómetros: negro, centrado, no negrita, más pequeño
     }
   };
   network = new vis.Network(container, data, options);
 
   // Fijamos la vista inicial para que coincida exactamente con el fondo
   network.moveTo({
-    position: { x: 379, y: 297.5 }, // Centro del canvas (758/2, 595/2)
+    position: { x: 500, y: 392.5 }, // Centro del nuevo canvas (1000/2, 785/2)
     scale: 1.0,
     offset: { x: 0, y: 0 } // Asegura que no haya desplazamiento adicional
   });
