@@ -123,7 +123,9 @@ main#network-container {
   backdrop-filter: blur(5px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   width: 450px; /* Más ancho para la tabla */
-  min-height: 400px;
+  height: 785px; /* Altura fija igual al contenedor del mapa */
+  display: flex;
+  flex-direction: column;
 }
 
 .state-panel h2 {
@@ -146,7 +148,8 @@ main#network-container {
 /* Estilos de la tabla */
 #table-container {
   width: 100%;
-  overflow-x: auto;
+  overflow-y: auto; /* Permite el desplazamiento vertical */
+  flex-grow: 1; /* Ocupa el espacio disponible */
 }
 
 table {
