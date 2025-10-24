@@ -82,7 +82,7 @@ function generarGrafoCuadricula() {
     'R6C3': { x: 270, y: 588 },
     'R6C4': { x: 361, y: 584 },
     'R6C5': { x: 447, y: 587 },
-    'R6C6': { x: 536, y: 586 },
+    'R6C6': { x: 570, y: 554 },
     'R6C7': { x: 655, y: 579 },
   };
   
@@ -232,6 +232,8 @@ function inicializarRed() {
       // sin que la librería intente aplicar ninguna física o diseño automático.
       hierarchical: false
     },
+    // Desactiva el redimensionamiento automático para mantener la alineación con la imagen de fondo
+    autoResize: false,
     nodes: {
       font: { color: '#FFFFFF' }
     },
