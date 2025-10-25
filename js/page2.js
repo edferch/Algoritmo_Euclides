@@ -51,7 +51,12 @@ function generarGrafoCuadricula() {
     'D3': { label: 'Subway', category: 'Comida Rápida' },
     'D4': { label: 'Cafe condesa', category: 'Cafés' },
     'F2': { label: 'La cuevita de los Urquizu', category: 'Comida Tradicional' },
-    'G6': { label: 'El adobe', category: 'Comida Tradicional' }
+    'G6': { label: 'El adobe', category: 'Comida Tradicional' },
+    'H6': { label: 'Café Sky', category: 'Cafés' },
+    'G4': { label: 'Doña Luisa Xicotencatl', category: 'Comida Tradicional'},
+    'G7': { label: 'La cabaña 22', category: 'Comida Extranjera'},
+    'D6': { label: 'Miso Korean Restaurant', category: 'Comida Extranjera'},
+    'B6': { label: 'El cazador Italiano Winebar', category: 'Comida Extranjera'}
   };
   
   // Generar nodos
@@ -163,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function populateCategoryFilter() {
-  const categorias = ['Todos', 'Cafés', 'Comida Rápida', 'Comida Tradicional'];
+  const categorias = ['Todos', 'Cafés', 'Comida Rápida', 'Comida Tradicional', 'Comida Extranjera'];
   categorias.forEach(cat => {
     const option = new Option(cat, cat);
     categoryFilter.add(option);
