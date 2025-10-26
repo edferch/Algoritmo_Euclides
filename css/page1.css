@@ -98,26 +98,64 @@ main#canvas-container {
 
 /* Contenedor de la visualización (nuevo layout) */
 .visualization-container {
-  /* TAREA PARA EL EQUIPO:
-     1. Usar flexbox para crear un layout de dos columnas (el canvas y el panel de descripción).
-     2. Añadir un 'gap' para separar las dos columnas.
-     3. Centrar el contenedor en la página y darle un ancho máximo ('max-width'). */
-}
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 1500px;
+  justify-content: center;
+  }
 
 /* Panel de Estado y Descripción */
 .state-panel {
-  /* TAREA PARA EL EQUIPO:
-     1. Darle un ancho fijo ('width'), un alto mínimo ('min-height') y un fondo semi-transparente.
-     2. Añadir padding, bordes redondeados y una sombra para que parezca una tarjeta.
-     3. Usar flexbox en modo columna para organizar su contenido (título, descripción, botones).
-     4. Estilizar el título h2 y el párrafo p#step-description. Al párrafo, darle 'flex-grow: 1'
-        para que ocupe el espacio sobrante y empuje los botones de navegación hacia abajo. */
+   background-color: rgba(255, 255, 255, 0.05);
+   padding: 25px;
+   border-radius: 12px;
+   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+   backdrop-filter: blur(5px);
+   border: 1px solid rgba(0, 255, 255, 255.0.2);
+   width: 450px;
+   min-height: 400px;
+   display: flex;
+   flex-direction: column;
+}
+
+.state-panel h2{
+  margin-top: 0;
+  color: #3498db;
+  border-bottom: 2px solid #34495e;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+}
+.state-panel p#step-description{
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #bdc3c7;
+  flex-grow: 1;
 }
 
 /* Controles de Navegación (movidos dentro del panel) */
 .navigation-controls {
-  /* TAREA PARA EL EQUIPO:
-     1. Usar flexbox para alinear los botones y el contador de pasos.
-     2. Ocultarlos por defecto ('visibility: hidden'). El JavaScript los hará visibles cuando sea necesario.
-     3. Estilizar los botones de navegación y el contador de pasos. */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
+  visibility: hidden;
+}
+.navigation-controls button {
+  background: #34495e;
+  font-size: 1rem;
+  padding: 8px 16px;
+}
+.navigation-controls button:hover{
+  background: #34495e;
+  transform: translateY(-2px);
+}
+#step-counter{
+  font-size: 1rem;
+  font-weight: 400;
+  min-width: 400;
+text-align: center;
 }

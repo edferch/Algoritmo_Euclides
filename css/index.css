@@ -38,17 +38,40 @@ header p {
 
 /* Menú de navegación */
 .menu {
-  /* TAREA PARA EL EQUIPO:
-     1. Usar flexbox para centrar los elementos del menú.
-     2. Añadir un 'gap' (espacio) entre los botones del menú.
-     3. Permitir que los botones se envuelvan ('flex-wrap') si no caben en una línea. */
+display: flex; 
+justify-content: center;
+ align-items: center;  
+ gap: 20px; 
+ flex-wrap: wrap; 
+margin-top: 30px; 
 }
 
 .menu-button {
-  /* TAREA PARA EL EQUIPO:
-     1. Darle un fondo semi-transparente, padding, bordes redondeados y una sombra.
-     2. Quitar el subrayado del enlace ('text-decoration').
-     3. Definir un ancho ('width') para que los botones sean uniformes.
-     4. Añadir una transición y un efecto :hover para que el botón se eleve al pasar el mouse.
-     5. Estilizar los textos h2 y p dentro del botón (color, tamaño de fuente, etc.). */
+  background-color: rgba(100, 161, 226, 0.481);
+  color: white;
+  width: 150px;
+   text-align: center;
+   padding: 10px 0;
+   border-radius: 12px;
+   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+   text-decoration: none;
+   border-style: groove;
+   font-weight: bold;
+   transition: background-color 0.3s ease, transform 0.2s ease;
+}
+.menu-button:hover {
+  background-color: rgba(0, 123, 255, 0.8); 
+  transform: scale(1.05);
+}
+.menu-button h2 {
+  font-size: 1.5rem;
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #3498db;
+}
+.menu-button p {
+  font-size: 1rem;
+  font-weight: 300;
+  margin-bottom: 0;
+  color: #bdc3c7;
 }
