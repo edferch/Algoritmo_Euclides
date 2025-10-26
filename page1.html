@@ -14,7 +14,7 @@
 <body>
   <header>
     <h1>Visualizador del Algoritmo de Euclides</h1>
-    <!-- Aquí pueden poner los nombres de los integrantes del grupo -->
+    <p class="team-members">Integrantes: <strong>Eder</strong>, <strong>Keila</strong>, <strong>Karen</strong> y <strong>Kimberly</strong></p>
   </header>
 
   <div class="controls">
@@ -27,19 +27,28 @@
       <input id="input-b" type="number">
     </div>
     <div class="input-group">
-        <label for="input-c">Número C</label>
-        <input id= "input-c" type="number">
+      <label for="input-c">Número C</label>
+      <input id="input-c" type="number">
     </div>
     <button id="submit-btn">✨ Visualizar</button>
   </div>
 
   <div class="visualization-container">
     <main id="canvas-container"></main>
-    <!-- TAREA PARA EL EQUIPO:
-         1. Crear un panel lateral con la etiqueta <aside> y la clase "state-panel".
-         2. Dentro del panel, añadir un <h2> con id "step-title" para el título del paso.
-         3. Añadir un <p> con id "step-description" para la explicación.
-         4. Crear un <div> con id "navigation-controls" y dentro poner los botones (prev-btn, next-btn) y el contador (step-counter). -->
+
+    <!-- Panel lateral -->
+    <aside class="state-panel">
+      <h2 id="step-title">Paso 1: Inicio del algoritmo</h2>
+      <p id="step-description">
+        Aquí se mostrará la descripción de cada paso del algoritmo de Euclides a medida que avances.
+      </p>
+
+      <div id="navigation-controls">
+        <button id="prev-btn">⬅ Anterior</button>
+        <span id="step-counter">Paso 1 de 1</span>
+        <button id="next-btn">Siguiente ➡</button>
+      </div>
+    </aside>
   </div>
 
   <script src="/js/page1.js"></script>
