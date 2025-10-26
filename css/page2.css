@@ -1,4 +1,3 @@
-/* Estilo General del Cuerpo */
 body {
   font-family: 'Poppins', sans-serif;
   background: linear-gradient(135deg, #1d2b64, #2c3e50);
@@ -11,7 +10,6 @@ body {
   min-height: 100vh;
 }
 
-/* Encabezado */
 header {
   text-align: center;
   margin-bottom: 30px;
@@ -29,7 +27,6 @@ header p {
   color: #bdc3c7;
 }
 
-/* Contenedor de Controles */
 .controls {
   display: flex;
   gap: 20px;
@@ -72,7 +69,6 @@ select:focus {
   box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
 }
 
-/* Botón Principal */
 button {
   background: linear-gradient(45deg, #3498db, #8e44ad);
   color: white;
@@ -90,31 +86,27 @@ button:hover {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
-/* Contenedor de la visualización */
 .visualization-container {
   display: flex;
   gap: 30px;
   align-items: flex-start;
-  width: 95%; /* Usar un porcentaje del ancho de la ventana */
-  max-width: 1800px; /* Aumentar el ancho máximo */
+  width: 95%;
+  max-width: 1800px;
   justify-content: center;
 }
 
-/* Contenedor del Canvas */
 main#network-container {
-  width: 1000px; /* Aumentado para una visualización más grande */
-  height: 785px; /* Aumentado para una visualización más grande, manteniendo la proporción */
+  width: 1000px;
+  height: 785px;
   flex-shrink: 0;
   border-radius: 12px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  /* --- Cambios para el fondo de mapa --- */
-  background-image: url('../img/mapa_fondo.png'); /* ¡Asegúrate de que esta ruta y nombre de archivo sean correctos! */
-  background-size: 100% 100%; /* Estira la imagen para que cubra exactamente el contenedor */
-  background-position: center; /* Centra la imagen */
+  background-image: url('../img/mapa_fondo.png');
+  background-size: 100% 100%;
+  background-position: center;
 }
 
-/* Panel de Estado y Tabla */
 .state-panel {
   background-color: rgba(255, 255, 255, 0.05);
   padding: 25px;
@@ -122,8 +114,8 @@ main#network-container {
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(5px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  width: 450px; /* Más ancho para la tabla */
-  height: 785px; /* Altura fija igual al contenedor del mapa */
+  width: 450px;
+  height: 785px;
   display: flex;
   flex-direction: column;
 }
@@ -145,11 +137,10 @@ main#network-container {
   margin-bottom: 20px;
 }
 
-/* Estilos de la tabla */
 #table-container {
   width: 100%;
-  overflow-y: auto; /* Permite el desplazamiento vertical */
-  flex-grow: 1; /* Ocupa el espacio disponible */
+  overflow-y: auto;
+  flex-grow: 1;
 }
 
 table {
@@ -177,14 +168,13 @@ tr.current-row {
   background-color: rgba(241, 196, 15, 0.2);
 }
 
-/* Controles de Navegación */
 .navigation-controls {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 20px;
   margin-top: 20px;
-  visibility: hidden; /* Ocultos por defecto */
+  visibility: hidden;
 }
 
 .navigation-controls button {

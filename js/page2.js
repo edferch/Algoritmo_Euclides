@@ -1,34 +1,28 @@
-// --- VARIABLES GLOBALES ---
 let categoryFilter, endNodeSelect, submitBtn, prevBtn, nextBtn, stepTitle, stepDescription, tableContainer, stepCounter, navControls;
-let startNodeId; // Variable global para el nodo de inicio
+let startNodeId;
 
 let pasos = [];
 let pasoActual = 0;
 let calculando = false;
 
-// Variables para Vis-Network
 let network = null;
 let nodesDataSet = new vis.DataSet();
 let edgesDataSet = new vis.DataSet();
 
-// Colores para la visualización
 const COLOR_POI = { border: '#e67e22', background: '#e67e22' };
 const COLOR_NORMAL = { border: '#82bceeff', background: '#82bceeff' };
 const COLOR_VISITADO = { border: '#2ecc71', background: 'rgba(46, 204, 113, 0.5)' };
 const COLOR_ACTUAL = { border: '#0ff15aff', background: '#0ff15aff' };
 const COLOR_CAMINO = '#e74c3c';
-const COLOR_ARISTA = '#D8E0E7'; // Cambiado a blanco para mejor contraste sobre un mapa
+const COLOR_ARISTA = '#D8E0E7';
 
-let nodeMap = {}; // Mapea ID de nodo a índice (ej: 'GUATEMALA' -> 0)
-let adjacencyMatrix = []; // Matriz de adyacencia para los pesos
+let nodeMap = {};
+let adjacencyMatrix = [];
 
-// --- GENERADOR DEL GRAFO EN CUADRÍCULA ---
 function generarGrafoCuadricula() {
-  const filas = 7; // Aumentado de 6 a 7 para añadir una fila arriba
-  const columnas = 8; // Aumentado de 7 a 8 para añadir una columna a la derecha
+  const filas = 7;
+  const columnas = 8;
   
-  // Coordenadas escaladas para el nuevo tamaño del contenedor (1000x785)
-  // Las claves han sido actualizadas al nuevo formato de ID (ej. A1, B1, etc.)
   const nuevasCoordenadas = {
     'A1': { x: 51, y: 38 }, 'B1': { x: 208, y: 37 }, 'C1': { x: 315, y: 36 }, 'D1': { x: 425, y: 34 }, 'E1': { x: 536, y: 34 }, 'F1': { x: 648, y: 34 }, 'G1': { x: 755, y: 29 }, 'H1': { x: 914, y: 24 },
     'A2': { x: 47, y: 197 }, 'B2': { x: 211, y: 197 }, 'C2': { x: 315, y: 197 }, 'D2': { x: 425, y: 194 }, 'E2': { x: 535, y: 192 }, 'F2': { x: 641, y: 187 }, 'G2': { x: 755, y: 187 }, 'H2': { x: 913, y: 183 },
@@ -43,7 +37,6 @@ function generarGrafoCuadricula() {
   const aristas = [];
   
   const puntosDeInteres = {
-    // ID_NODO: { label, category }
     'A4': { label: 'Pollo Campero', category: 'Comida Rápida' },
     'A7': { label: 'Entrada', category: 'Punto de Partida' },
     'B4': { label: 'Mcdonalds', category: 'Comida Rápida' },
@@ -59,7 +52,6 @@ function generarGrafoCuadricula() {
     'B6': { label: 'El cazador Italiano Winebar', category: 'Comida Extranjera'}
   };
   
-  // Generar nodos
   for (let r = 0; r < filas; r++) {
     for (let c = 0; c < columnas; c++) {
       const id = `${String.fromCharCode('A'.charCodeAt(0) + c)}${r + 1}`;
@@ -73,35 +65,30 @@ function generarGrafoCuadricula() {
         y: coords.y,
         category: esPOI ? puntosDeInteres[id].category : null,
         type: esPOI ? 'poi' : 'normal',
-        // Propiedades para Vis-Network
-        shape: esPOI ? 'dot' : 'circle', // Círculo para intersecciones
-        size: esPOI ? 12 : 15, // Más grandes las intersecciones
+        shape: esPOI ? 'dot' : 'circle',
+        size: esPOI ? 12 : 15,
         color: esPOI ? COLOR_POI : COLOR_NORMAL,
       });
 
     }
   }
 
-  // Generar aristas (calles)
   for (let r = 0; r < filas; r++) {
     for (let c = 0; c < columnas; c++) {
       const fromId = `${String.fromCharCode('A'.charCodeAt(0) + c)}${r + 1}`;
-      // Conexión a la derecha
       if (c < columnas - 1) {
         const toId = `${String.fromCharCode('A'.charCodeAt(0) + c + 1)}${r + 1}`;
         const weight = ((r * 13 + c * 7) % 4) + 1;
         aristas.push({ 
           id: `${fromId}_${toId}`, from: fromId, to: toId, weight: weight,
-          // Propiedades para Vis-Network
           label: `${weight}km`,
           color: { color: COLOR_ARISTA, highlight: COLOR_CAMINO },
           width: 4,
         });
       }
-      // Conexión hacia abajo
       if (r < filas - 1) {
         const toId = `${String.fromCharCode('A'.charCodeAt(0) + c)}${r + 2}`;
-        const weight = ((r * 17 + c * 5) % 5) + 1; // Fórmula determinista para pesos 1-5
+        const weight = ((r * 17 + c * 5) % 5) + 1;
         aristas.push({ 
           id: `${fromId}_${toId}`, from: fromId, to: toId, weight: weight,
           label: `${weight}km`,
@@ -116,10 +103,8 @@ function generarGrafoCuadricula() {
 
 const graph = generarGrafoCuadricula();
 
-// --- LÓGICA DE PREPARACIÓN ---
 function prepararGrafo() {
   const n = graph.nodes.length;
-  // Crear mapa de ID a índice
   graph.nodes.forEach((node, i) => {
     nodeMap[node.id] = i;
   });
@@ -127,22 +112,19 @@ function prepararGrafo() {
   // Inicializar matriz de adyacencia con Infinito
   adjacencyMatrix = Array(n).fill(null).map(() => Array(n).fill(Infinity));
 
-  // Llenar la matriz con los pesos
   for (let i = 0; i < n; i++) {
-    adjacencyMatrix[i][i] = 0; // Distancia de un nodo a sí mismo es 0
+    adjacencyMatrix[i][i] = 0;
   }
 
   graph.edges.forEach(edge => {
     const fromIndex = nodeMap[edge.from];
     const toIndex = nodeMap[edge.to];
     adjacencyMatrix[fromIndex][toIndex] = edge.weight;
-    adjacencyMatrix[toIndex][fromIndex] = edge.weight; // Grafo no dirigido
+    adjacencyMatrix[toIndex][fromIndex] = edge.weight;
   });
 }
 
-// --- LÓGICA DE LA APLICACIÓN ---
 document.addEventListener('DOMContentLoaded', () => {
-  // Referencias a elementos del DOM
   categoryFilter = document.getElementById('category-filter');
   endNodeSelect = document.getElementById('end-node');
   submitBtn = document.getElementById('submit-btn');
@@ -154,12 +136,10 @@ document.addEventListener('DOMContentLoaded', () => {
   stepCounter = document.getElementById('step-counter');
   navControls = document.getElementById('navigation-controls');
 
-  // Lógica de los filtros
   populateCategoryFilter();
-  populateDestinationFilter('Todos'); // Esto llamará a applyVisualHighlights()
+  populateDestinationFilter('Todos');
   categoryFilter.addEventListener('change', (e) => populateDestinationFilter(e.target.value));
   
-  // Eventos de los botones
   submitBtn.addEventListener('click', iniciarVisualizacion);
   prevBtn.addEventListener('click', pasoAnterior);
   nextBtn.addEventListener('click', siguientePaso);
@@ -176,7 +156,7 @@ function populateCategoryFilter() {
 }
 
 function populateDestinationFilter(categoria) {
-  endNodeSelect.innerHTML = ''; // Limpiar opciones anteriores
+  endNodeSelect.innerHTML = '';
   
   const puntosDeInteres = graph.nodes.filter(n => n.type === 'poi' && n.label !== 'Entrada');
   const nodosFiltrados = (categoria === 'Todos')
@@ -188,19 +168,15 @@ function populateDestinationFilter(categoria) {
     endNodeSelect.add(option);
   });
 
-  // Si hay nodos en la lista, pre-seleccionar el primero
   if (endNodeSelect.options.length > 0) {
     endNodeSelect.selectedIndex = 0;
   }
 
-  // Aplicar todos los resaltados visuales
   applyVisualHighlights();
 
-  // El evento onchange ahora solo llama a applyVisualHighlights
   endNodeSelect.onchange = applyVisualHighlights;
 }
 
-// Resetea todos los nodos a su estado por defecto
 function resetAllNodeColors() {
   const nodeUpdates = graph.nodes.map(n => ({
     id: n.id,
@@ -210,7 +186,6 @@ function resetAllNodeColors() {
   nodesDataSet.update(nodeUpdates);
 }
 
-// Aplica todos los resaltados visuales (categoría y ruta)
 function applyVisualHighlights() {
   resetAllNodeColors(); // Empezar con todos los nodos en su estado base
 
@@ -220,11 +195,9 @@ function applyVisualHighlights() {
     ? puntosDeInteres
     : puntosDeInteres.filter(n => n.category === currentCategory);
 
-  // Resaltar nodos de la categoría actual en amarillo
   const categoryHighlightUpdates = nodosFiltrados.map(n => ({ id: n.id, color: COLOR_ACTUAL, size: 15 }));
   if (categoryHighlightUpdates.length > 0) nodesDataSet.update(categoryHighlightUpdates);
 
-  // Resaltar Entrada y Destino en rojo
   const entradaNode = graph.nodes.find(node => node.label === 'Entrada');
   const destinoId = endNodeSelect.value;
 
@@ -247,44 +220,39 @@ function inicializarRed() {
   const options = {
     physics: false,
     interaction: {
-      dragNodes: false,  // Deshabilitado para el uso normal
-      dragView: false,  // Deshabilita el arrastre del lienzo (pan)
-      zoomView: false,  // Deshabilita el zoom del lienzo
-      selectConnectedEdges: false, // Evita que las aristas se resalten al seleccionar un nodo
+      dragNodes: false,
+      dragView: false,
+      zoomView: false,
+      selectConnectedEdges: false,
     },
     layout: {
-      // Esto asegura que las coordenadas X, Y que definimos se usen directamente
-      // sin que la librería intente aplicar ninguna física o diseño automático.
       hierarchical: false
     },
-    // Desactiva el redimensionamiento automático para mantener la alineación con la imagen de fondo
     autoResize: false,
     nodes: {
-      font: { color: '#000000', size: 10, face: 'Poppins' }, // Fuente por defecto para todos los nodos
+      font: { color: '#000000', size: 10, face: 'Poppins' },
       shapeProperties: {
-        interpolation: false // Para que los círculos sean nítidos
+        interpolation: false
       }
     },
     edges: {
-      font: { color: '#000000', strokeWidth: 0, align: 'middle', size: 10 } // Kilómetros: negro, centrado, no negrita, más pequeño
+      font: { color: '#000000', strokeWidth: 0, align: 'middle', size: 10 }
     }
   };
   network = new vis.Network(container, data, options);
 
-  // Fijamos la vista inicial para que coincida exactamente con el fondo
   network.moveTo({
-    position: { x: 500, y: 392.5 }, // Centro del nuevo canvas (1000/2, 785/2)
+    position: { x: 500, y: 392.5 },
     scale: 1.0,
-    offset: { x: 0, y: 0 } // Asegura que no haya desplazamiento adicional
+    offset: { x: 0, y: 0 }
   });
 
-  // Evento de clic en un nodo para seleccionarlo como destino
   network.on('click', function (params) {
     if (params.nodes.length > 0) {
       const nodeId = params.nodes[0];
       const clickedNode = graph.nodes.find(n => n.id === nodeId);
       
-      if (clickedNode && clickedNode.label !== 'Entrada') { // No permitir seleccionar "Entrada" como destino
+      if (clickedNode && clickedNode.label !== 'Entrada') {
         categoryFilter.value = clickedNode.category;
         populateDestinationFilter(clickedNode.category);
         endNodeSelect.value = nodeId;
@@ -292,24 +260,23 @@ function inicializarRed() {
         // Si el nodo clicado no es un POI, lo añadimos temporalmente al selector de destino
         if (clickedNode.type !== 'poi') {
           const tempOption = new Option(`Intersección (${nodeId})`, nodeId); // Crear una opción temporal
-          endNodeSelect.innerHTML = ''; // Limpiar el selector antes de añadir
+          endNodeSelect.innerHTML = '';
           endNodeSelect.add(tempOption);
           endNodeSelect.value = nodeId;
         }
-        applyVisualHighlights(); // Aplicar los resaltados después de la selección
+        applyVisualHighlights();
       }
     }
   });
 }
 
 function iniciarVisualizacion() {
-  // Encontrar el nodo "Entrada" programáticamente
   const entradaNode = graph.nodes.find(node => node.label === 'Entrada');
   if (!entradaNode) {
     alert('Error: No se pudo encontrar el nodo de "Entrada".');
     return;
   }
-  startNodeId = entradaNode.id; // Asignar a la variable global
+  startNodeId = entradaNode.id;
   const endNodeId = endNodeSelect.value;
 
   if (startNodeId === endNodeId) {
@@ -338,25 +305,21 @@ function pasoAnterior() {
   }
 }
 
-// --- GENERADOR DE PASOS DE DIJKSTRA ---
 function generarPasosDijkstra(startId, endId) {
   const pasosGenerados = [];
   
-  // 1. Inicializar etiquetas para todos los nodos
   const labels = {};
   graph.nodes.forEach(node => {
     labels[node.id] = {
       distance: Infinity,
       predecessors: [],
-      status: 'temporal' // Todos son temporales al inicio
+      status: 'temporal'
     };
   });
 
-  // Etiqueta inicial para el nodo de origen
   labels[startId].distance = 0;
   labels[startId].predecessors = ['-'];
 
-  // 1. Paso de Inicialización
   pasosGenerados.push({
     labels: JSON.parse(JSON.stringify(labels)),
     currentVertexId: startId,
@@ -366,14 +329,12 @@ function generarPasosDijkstra(startId, endId) {
 
   let currentVertexId = startId;
 
-  // El bucle se ejecuta mientras haya nodos temporales alcanzables
   while (currentVertexId) {
     const currentLabel = labels[currentVertexId];
     const currentVertexNode = graph.nodes.find(n => n.id === currentVertexId);
     let stepSummary = `Se selecciona el vértice temporal con menor etiqueta: <strong>${currentVertexNode.label.trim() || currentVertexId}</strong>.`;
     let stepLog = '';
 
-    // 2. Explorar vecinos del vértice actual
     const neighbors = graph.edges.filter(edge => edge.from === currentVertexId || edge.to === currentVertexId);
     let updatesMade = false;
 
@@ -381,25 +342,21 @@ function generarPasosDijkstra(startId, endId) {
       const neighborId = edge.from === currentVertexId ? edge.to : edge.from;
       const neighborLabel = labels[neighborId];
 
-      // Solo procesar si el vecino es temporal
       if (neighborLabel.status === 'temporal') {
         const newDistance = currentLabel.distance + edge.weight;
         const neighborNode = graph.nodes.find(n => n.id === neighborId);
 
-        // Si el nuevo camino es más corto
         if (newDistance < neighborLabel.distance) {
           stepLog += `<tr><td>${neighborNode.label.trim() || neighborId}</td><td>${newDistance} &lt; ${neighborLabel.distance === Infinity ? '∞' : neighborLabel.distance}</td><td><strong>Sustituir</strong></td></tr>`;
           neighborLabel.distance = newDistance;
-          neighborLabel.predecessors = [currentVertexId]; // Guardar el ID, no la etiqueta
+          neighborLabel.predecessors = [currentVertexId];
           updatesMade = true;
         } 
-        // Si el nuevo camino es de igual longitud
         else if (newDistance === neighborLabel.distance) {
           stepLog += `<tr><td>${neighborNode.label.trim() || neighborId}</td><td>${newDistance} = ${neighborLabel.distance}</td><td><strong>Marcar</strong></td></tr>`;
           neighborLabel.predecessors.push(currentVertexId);
           updatesMade = true;
         }
-        // Si el nuevo camino es más largo, no se hace nada
         else {
             stepLog += `<tr><td>${neighborNode.label.trim() || neighborId}</td><td>${newDistance} &gt; ${neighborLabel.distance}</td><td>Ignorar</td></tr>`;
         }
@@ -410,7 +367,6 @@ function generarPasosDijkstra(startId, endId) {
         stepLog = "<tr><td colspan='3'>Todos los vecinos ya son permanentes. No hay etiquetas que actualizar.</td></tr>";
     }
 
-    // 3. Marcar el vértice actual como permanente
     labels[currentVertexId].status = 'permanente';
     stepSummary += `<br>Se exploran sus vecinos y el vértice <strong>${currentVertexNode.label.trim() || currentVertexId}</strong> ahora es <strong>permanente</strong>.`;
 
@@ -422,11 +378,9 @@ function generarPasosDijkstra(startId, endId) {
       log: stepLog
     });
 
-    // Si el destino se vuelve permanente, podemos parar
     if (currentVertexId === endId) {
-      currentVertexId = null; // Termina el bucle
+      currentVertexId = null;
     } else {
-      // 4. Encontrar el siguiente vértice temporal con la menor distancia
       let nextVertexId = null;
       let minDistance = Infinity;
       for (const nodeId in labels) {
@@ -439,7 +393,6 @@ function generarPasosDijkstra(startId, endId) {
     }
   }
 
-  // Paso final para mostrar el resultado
   const finalLabel = labels[endId];
   const finalPath = reconstruirCaminoDesdeEtiquetas(labels, startId, endId);
   const pathString = finalPath.map(id => graph.nodes.find(n => n.id === id).label).join(' → ');
@@ -461,11 +414,9 @@ function reconstruirCaminoDesdeEtiquetas(labels, startId, endId) {
     path.unshift(currentId);
     const label = labels[currentId];
     if (label && label.predecessors.length > 0) {
-      // Tomamos el primer predecesor para reconstruir un camino
-      // El predecesor se guarda como el ID del nodo, lo que permite la reconstrucción correcta.
-      currentId = label.predecessors[0]; // El predecesor ahora se guarda como el ID del nodo.
+      currentId = label.predecessors[0];
     } else {
-      currentId = null; // Se rompió el camino
+      currentId = null;
     }
   }
   if (currentId === startId) {
@@ -474,7 +425,6 @@ function reconstruirCaminoDesdeEtiquetas(labels, startId, endId) {
   return path;
 }
 
-// --- FUNCIONES DE ACTUALIZACIÓN DE UI ---
 function actualizarUI(paso) {
   stepTitle.innerHTML = paso.fase;
   stepDescription.innerHTML = paso.descripcion;
@@ -483,7 +433,6 @@ function actualizarUI(paso) {
 }
 
 function crearTabla(paso) {
-  // Si no hay un log en este paso, no mostrar tabla.
   if (!paso.log) {
     tableContainer.innerHTML = '';
     return;
@@ -495,16 +444,14 @@ function crearTabla(paso) {
   tableContainer.innerHTML = tablaHTML;
 }
 
-// --- FUNCIONES DE VISUALIZACIÓN CON VIS-NETWORK ---
 function actualizarVisualizacion() {
   const paso = pasos[pasoActual];
   actualizarUI(paso);
 
-  // 1. Resetear todos los nodos y aristas a su estado base
   const nodeUpdates = graph.nodes.map(n => ({
     id: n.id,
-    color: n.type === 'poi' ? COLOR_POI : COLOR_NORMAL, // Color por defecto
-    size: n.type === 'poi' ? 12 : 15, // Tamaño por defecto
+    color: n.type === 'poi' ? COLOR_POI : COLOR_NORMAL,
+    size: n.type === 'poi' ? 12 : 15,
   }));
   nodesDataSet.update(nodeUpdates);
 
@@ -515,7 +462,6 @@ function actualizarVisualizacion() {
   }));
   edgesDataSet.update(edgeUpdates);
 
-  // 2. Colorear nodos según el estado del paso
   const updates = [];
   for (const nodeId in paso.labels) {
     const label = paso.labels[nodeId];
@@ -531,15 +477,13 @@ function actualizarVisualizacion() {
 
   nodesDataSet.update(updates);
 
-  // 3. Si es el paso final, resaltar el camino
   if (paso.fase === 'Finalizado') {
     const finalPath = reconstruirCaminoDesdeEtiquetas(paso.labels, startNodeId, endNodeSelect.value);
     highlightPath(finalPath);
   }
 }
 
-function highlightPath(pathIndices) {  
-  // Resaltar aristas del camino final
+function highlightPath(pathIndices) {
   const edgeUpdates = [];
   for (let i = 0; i < pathIndices.length - 1; i++) {
     const fromId = pathIndices[i];
@@ -552,13 +496,12 @@ function highlightPath(pathIndices) {
   }
   edgesDataSet.update(edgeUpdates);
 
-  // Resaltar nodos del camino final
   const nodeUpdates = pathIndices.map(nodeId => {
     const node = graph.nodes.find(n => n.id === nodeId);
     return {
       id: nodeId,
       color: { border: COLOR_CAMINO, background: COLOR_CAMINO },
-      size: node.type === 'poi' ? 18 : 20, // Hacerlos más grandes en la ruta final
+      size: node.type === 'poi' ? 18 : 20,
     };
   });
   nodesDataSet.update(nodeUpdates);

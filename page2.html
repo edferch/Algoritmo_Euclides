@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Visualizador Avanzado del Algoritmo de Dijkstra</title>
   
-  <!-- Librería Vis-Network para visualización de grafos -->
   <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
   <link href="https://unpkg.com/vis-network/styles/vis-network.min.css" rel="stylesheet" type="text/css" />
 
@@ -37,9 +36,7 @@
     <aside class="state-panel">
       <h2 id="step-title">Estado del Algoritmo</h2>
       <p id="step-description">Selecciona un origen y destino y presiona "Visualizar".</p>
-      <div id="table-container">
-        <!-- La tabla de Dijkstra se generará aquí -->
-      </div>
+      <div id="table-container"></div>
       <div id="navigation-controls" class="navigation-controls">
         <button id="prev-btn">◀ Anterior</button>
         <span id="step-counter">Paso: 0 / 0</span>

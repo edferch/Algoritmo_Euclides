@@ -1,4 +1,3 @@
-// --- VARIABLES GLOBALES ---
 let inputA, inputB, inputC, submitBtn, prevBtn, nextBtn;
 let stepCounter, navControls, stepTitle, stepDescription;
 let originalA, originalB, originalC;
@@ -7,14 +6,12 @@ let pasos = [];
 let pasoActual = 0;
 let calculando = false;
 
-// --- COLORES ---
 const COLOR_FONDO = '#1E1E1E';
 const COLOR_TEXTO = '#FFFFFF';
-const COLOR_CUADRADO = '#3498db'; // Azul
-const COLOR_RESTO = '#e74c3c';   // Rojo
-const COLOR_FINAL = '#2ecc71';   // Verde
+const COLOR_CUADRADO = '#3498db';
+const COLOR_RESTO = '#e74c3c';
+const COLOR_FINAL = '#2ecc71';
 
-// --- UTILIDAD: calcular pasos del algoritmo de Euclides ---
 function euclidesPasos(a, b, etiqueta = '') {
   const lista = [];
   let x = a, y = b;
@@ -30,7 +27,6 @@ function euclidesPasos(a, b, etiqueta = '') {
   return { pasos: lista, mcd: x };
 }
 
-// --- CONFIGURACIÓN INICIAL ---
 function setup() {
   let canvasContainer = select('#canvas-container');
   let canvas = createCanvas(1000, 650);
@@ -54,11 +50,9 @@ function setup() {
   background(COLOR_FONDO);
   noLoop();
 
-  // Estado inicial del panel de descripción
   actualizarPanelInfo(null);
 }
 
-// --- DIBUJO PRINCIPAL ---
 function draw() {
   if (!calculando) return;
   background(COLOR_FONDO);
@@ -66,7 +60,6 @@ function draw() {
   actualizarPanelInfo(pasos[pasoActual]);
 }
 
-// --- LÓGICA DE CONTROL ---
 function iniciarVisualizacion() {
   originalA = parseInt(inputA.value());
   originalB = parseInt(inputB.value());
@@ -80,9 +73,7 @@ function iniciarVisualizacion() {
   pasos = [];
   pasoActual = 0;
 
-
   if (isNaN(originalC) || originalC <= 0) {
-    // --- Caso: 2 números ---
     let numeros = [originalA, originalB].sort((a, b) => b - a);
     let A = numeros[0];
     let B = numeros[1];
@@ -98,7 +89,6 @@ function iniciarVisualizacion() {
     });
 
   } else {
-    // --- Caso: 3 números ---
     let numeros = [originalA, originalB, originalC].sort((a, b) => b - a);
     let A = numeros[0];
     let B = numeros[1];
@@ -114,7 +104,6 @@ function iniciarVisualizacion() {
       esMensaje: true
     });
 
-    // Ordenamos mcdAB y C de mayor a menor antes de la fase 2
     let numeros2 = [mcdAB, C].sort((a, b) => b - a);
     let X = numeros2[0];
     let Y = numeros2[1];
@@ -149,7 +138,6 @@ function pasoAnterior() {
   }
 }
 
-// --- ACTUALIZACIÓN DEL PANEL DE INFORMACIÓN ---
 function actualizarPanelInfo(paso) {
   stepCounter.html(`Paso: ${pasoActual + 1} / ${pasos.length}`);
 
@@ -180,25 +168,21 @@ function actualizarPanelInfo(paso) {
   stepDescription.html(desc);
 }
 
-// --- FUNCIÓN DE DIBUJO ---
 function mostrarPaso(index) {
   const paso = pasos[index];
 
-  // Mensajes intermedios y final sin geometría
   if (paso.esMensaje) {
-    background(COLOR_FONDO); // Limpia el canvas
-    // El texto se muestra en el panel lateral
+    background(COLOR_FONDO);
     return;
   }
   if (paso.esFinal) {
     mostrarFinal();
     return;
   }
-  
+
   const numA = paso.a;
   const numB = paso.b;
 
-  // Paso final de fase (b=0): mostrar cuadrado verde de esa fase
   if (paso.final && numB === 0) {
     mostrarCuadradoFinalFase(numA);
     return;
@@ -211,27 +195,22 @@ function mostrarPaso(index) {
   const x_inicio = (width - w) / 2;
   const y_inicio = 70;
 
-  // Contenedor
   noFill();
   stroke(COLOR_TEXTO);
   strokeWeight(2);
   rect(x_inicio, y_inicio, w, h);
 
-  // Cuadrados azules (cociente)
   const tamCuadrado = numB * escala;
-  // Tamaño de texto dinámico basado en el tamaño del cuadrado
   const textoCuadradoSize = constrain(tamCuadrado / 3, 14, 50);
 
   for (let i = 0; i < paso.cociente; i++) {
     let x = x_inicio + i * tamCuadrado;
 
-    // Cuadrado
     fill(COLOR_CUADRADO);
     stroke(COLOR_TEXTO);
     strokeWeight(2);
     rect(x, y_inicio, tamCuadrado, tamCuadrado);
 
-    // Etiqueta centrada
     fill(COLOR_TEXTO);
     noStroke();
     textAlign(CENTER, CENTER);
@@ -239,7 +218,6 @@ function mostrarPaso(index) {
     text(paso.b, x + tamCuadrado / 2, y_inicio + tamCuadrado / 2);
   }
 
-  // Rectángulo rojo (resto)
   if (paso.resto > 0) {
     const restoW = paso.resto * escala;
     let x = x_inicio + paso.cociente * tamCuadrado;
@@ -249,7 +227,6 @@ function mostrarPaso(index) {
     strokeWeight(2);
     rect(x, y_inicio, restoW, tamCuadrado);
 
-    // Etiqueta centrada con tamaño dinámico
     const textoRestoSize = constrain(min(restoW, tamCuadrado) / 2.5, 14, 50);
     fill(COLOR_TEXTO);
     noStroke();
@@ -259,20 +236,17 @@ function mostrarPaso(index) {
   }
 }
 
-// --- Dibujo del cuadrado final de una fase ---
 function mostrarCuadradoFinalFase(valor) {
   const escala = min((width * 0.5) / valor, (height * 0.5) / valor);
   const tamFinal = valor * escala;
   const x = (width - tamFinal) / 2;
   const y = (height - tamFinal) / 2 - 40;
 
-  // Cuadrado verde
   fill(COLOR_FINAL);
   stroke(COLOR_TEXTO);
   strokeWeight(3);
   rect(x, y, tamFinal, tamFinal);
 
-  // Etiqueta dentro del cuadrado
   const textoSize = constrain(tamFinal / 3, 16, 80);
   fill(COLOR_TEXTO);
   noStroke();
@@ -281,20 +255,17 @@ function mostrarCuadradoFinalFase(valor) {
   text(valor, x + tamFinal / 2, y + tamFinal / 2);
 }
 
-// --- Dibujo del resultado final global ---
 function mostrarFinal() {
   const escala = min((width * 0.5) / mcd, (height * 0.5) / mcd);
   const tamFinal = mcd * escala;
   const x = (width - tamFinal) / 2;
   const y = (height - tamFinal) / 2 - 40;
 
-  // Cuadrado verde final
   fill(COLOR_FINAL);
   stroke(COLOR_TEXTO);
   strokeWeight(3);
   rect(x, y, tamFinal, tamFinal);
 
-  // Etiqueta dentro
   const textoSize = constrain(tamFinal / 3, 16, 80);
   fill(COLOR_TEXTO);
   noStroke();
