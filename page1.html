@@ -1,55 +1,51 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Visualizador del Algoritmo de Euclides</title>
-  
+  <base href="/PROYECTO_MATEMATICA_DISCRETA/">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
-  <link rel="stylesheet" type="text/css" href="./css/page1.css">
+  <link rel="stylesheet" type="text/css" href="css/page1.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-  <header>
-    <h1>Visualizador del Algoritmo de Euclides</h1>
-    <p class="team-members">Integrantes: <strong>Eder</strong>, <strong>Keila</strong>, <strong>Karen</strong> y <strong>Kimberly</strong></p>
-  </header>
-
-  <div class="controls">
-    <div class="input-group">
-      <label for="input-a">Número A</label>
-      <input id="input-a" type="number">
-    </div>
-    <div class="input-group">
-      <label for="input-b">Número B</label>
-      <input id="input-b" type="number">
-    </div>
-    <div class="input-group">
-      <label for="input-c">Número C</label>
-      <input id="input-c" type="number">
-    </div>
-    <button id="submit-btn">✨ Visualizar</button>
-  </div>
-
-  <div class="visualization-container">
-    <main id="canvas-container"></main>
-
-    <aside class="state-panel">
-      <h2 id="step-title">Paso 1: Inicio del algoritmo</h2>
-      <p id="step-description">
-        Aquí se mostrará la descripción de cada paso del algoritmo de Euclides a medida que avances.
-      </p>
-
-      <div id="navigation-controls">
-        <button id="prev-btn">⬅ Anterior</button>
-        <span id="step-counter">Paso 1 de 1</span>
-        <button id="next-btn">Siguiente ➡</button>
+    <div class="container">
+        <header>
+            <h1>Visualizador de Algoritmos</h1>
+            <p>Un proyecto para visualizar el funcionamiento de algoritmos clásicos.</p>
+            <p>Integrantes: <strong>Eder</strong>, <strong>Keila</strong>, <strong>Karen</strong> y <strong>Kimberly</strong></p>
+        </header>
+    <div class="controls">
+      <div class="input-group">
+        <label for="input-a">Número A</label>
+        <input type="number" id="input-a" value="1071">
       </div>
-    </aside>
+      <div class="input-group">
+        <label for="input-b">Número B</label>
+        <input type="number" id="input-b" value="462">
+      </div>
+      <div class="input-group">
+        <label for="input-c">Número C (Opcional)</label>
+        <input type="number" id="input-c" placeholder="Ej: 12">
+      </div>
+      <button id="submit-btn">✨ Visualizar</button>
+    </div>
+    <div class="visualization-container">
+      <main id="canvas-container"></main>
+      <aside class="state-panel">
+        <h2 id="step-title">Descripción del Paso</h2>
+        <p id="step-description">Ingresa dos o tres números y presiona "Visualizar" para comenzar.</p>
+        <div id="navigation-controls" class="navigation-controls">
+          <button id="prev-btn">◀ Anterior</button>
+          <span id="step-counter">Paso: 0 / 0</span>
+          <button id="next-btn">Siguiente ▶</button>
+        </div>
+      </aside>
+    </div>
   </div>
-
-  <script src="./js/page1.js"></script>
+  <script src="js/page1.js"></script>
 </body>
 </html>
