@@ -91,13 +91,13 @@ button:hover {
   gap: 30px;
   align-items: flex-start;
   width: 95%;
-  max-width: 1800px;
+  max-width: 1200px;
   justify-content: center;
 }
 
 main#network-container {
-  width: 1000px;
-  height: 785px;
+  width: 800px;
+  height: 628px;
   flex-shrink: 0;
   border-radius: 12px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
@@ -114,8 +114,8 @@ main#network-container {
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(5px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  width: 450px;
-  height: 785px;
+  width: 360px;
+  height: 628px;
   display: flex;
   flex-direction: column;
 }

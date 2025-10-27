@@ -22,15 +22,17 @@ let adjacencyMatrix = [];
 function generarGrafoCuadricula() {
   const filas = 7;
   const columnas = 8;
+  const escala = 0.8; // Factor para hacer el mapa más pequeño
   
   const nuevasCoordenadas = {
-    'A1': { x: 51, y: 38 }, 'B1': { x: 208, y: 37 }, 'C1': { x: 315, y: 36 }, 'D1': { x: 425, y: 34 }, 'E1': { x: 536, y: 34 }, 'F1': { x: 648, y: 34 }, 'G1': { x: 755, y: 29 }, 'H1': { x: 914, y: 24 },
-    'A2': { x: 47, y: 197 }, 'B2': { x: 211, y: 197 }, 'C2': { x: 315, y: 197 }, 'D2': { x: 425, y: 194 }, 'E2': { x: 535, y: 192 }, 'F2': { x: 641, y: 187 }, 'G2': { x: 755, y: 187 }, 'H2': { x: 913, y: 183 },
-    'A3': { x: 43, y: 305 }, 'B3': { x: 211, y: 306 }, 'C3': { x: 315, y: 303 }, 'D3': { x: 427, y: 305 }, 'E3': { x: 536, y: 302 }, 'F3': { x: 643, y: 300 }, 'G3': { x: 755, y: 296 }, 'H3': { x: 913, y: 292 },
-    'A4': { x: 43, y: 414 }, 'B4': { x: 209, y: 414 }, 'C4': { x: 315, y: 411 }, 'D4': { x: 429, y: 408 }, 'E4': { x: 536, y: 407 }, 'F4': { x: 643, y: 404 }, 'G4': { x: 755, y: 404 }, 'H4': { x: 913, y: 401 },
-    'A5': { x: 39, y: 535 }, 'B5': { x: 208, y: 528 }, 'C5': { x: 315, y: 525 }, 'D5': { x: 427, y: 517 }, 'E5': { x: 536, y: 519 }, 'F5': { x: 643, y: 514 }, 'G5': { x: 755, y: 510 }, 'H5': { x: 910, y: 506 },
-    'A6': { x: 37, y: 642 }, 'B6': { x: 207, y: 638 }, 'C6': { x: 316, y: 635 }, 'D6': { x: 427, y: 628 }, 'E6': { x: 537, y: 625 }, 'F6': { x: 645, y: 619 }, 'G6': { x: 755, y: 615 }, 'H6': { x: 910, y: 611 },
-    'A7': { x: 33, y: 750 }, 'B7': { x: 207, y: 745 }, 'C7': { x: 316, y: 739 }, 'D7': { x: 425, y: 730 }, 'E7': { x: 537, y: 725 }, 'F7': { x: 646, y: 725 }, 'G7': { x: 755, y: 722 }, 'H7': { x: 908, y: 713 },
+    // Coordenadas originales escaladas
+    'A1': { x: 51*escala, y: 38*escala }, 'B1': { x: 208*escala, y: 37*escala }, 'C1': { x: 315*escala, y: 36*escala }, 'D1': { x: 425*escala, y: 34*escala }, 'E1': { x: 536*escala, y: 34*escala }, 'F1': { x: 648*escala, y: 34*escala }, 'G1': { x: 755*escala, y: 29*escala }, 'H1': { x: 914*escala, y: 24*escala },
+    'A2': { x: 47*escala, y: 197*escala }, 'B2': { x: 211*escala, y: 197*escala }, 'C2': { x: 315*escala, y: 197*escala }, 'D2': { x: 425*escala, y: 194*escala }, 'E2': { x: 535*escala, y: 192*escala }, 'F2': { x: 641*escala, y: 187*escala }, 'G2': { x: 755*escala, y: 187*escala }, 'H2': { x: 913*escala, y: 183*escala },
+    'A3': { x: 43*escala, y: 305*escala }, 'B3': { x: 211*escala, y: 306*escala }, 'C3': { x: 315*escala, y: 303*escala }, 'D3': { x: 427*escala, y: 305*escala }, 'E3': { x: 536*escala, y: 302*escala }, 'F3': { x: 643*escala, y: 300*escala }, 'G3': { x: 755*escala, y: 296*escala }, 'H3': { x: 913*escala, y: 292*escala },
+    'A4': { x: 43*escala, y: 414*escala }, 'B4': { x: 209*escala, y: 414*escala }, 'C4': { x: 315*escala, y: 411*escala }, 'D4': { x: 429*escala, y: 408*escala }, 'E4': { x: 536*escala, y: 407*escala }, 'F4': { x: 643*escala, y: 404*escala }, 'G4': { x: 755*escala, y: 404*escala }, 'H4': { x: 913*escala, y: 401*escala },
+    'A5': { x: 39*escala, y: 535*escala }, 'B5': { x: 208*escala, y: 528*escala }, 'C5': { x: 315*escala, y: 525*escala }, 'D5': { x: 427*escala, y: 517*escala }, 'E5': { x: 536*escala, y: 519*escala }, 'F5': { x: 643*escala, y: 514*escala }, 'G5': { x: 755*escala, y: 510*escala }, 'H5': { x: 910*escala, y: 506*escala },
+    'A6': { x: 37*escala, y: 642*escala }, 'B6': { x: 207*escala, y: 638*escala }, 'C6': { x: 316*escala, y: 635*escala }, 'D6': { x: 427*escala, y: 628*escala }, 'E6': { x: 537*escala, y: 625*escala }, 'F6': { x: 645*escala, y: 619*escala }, 'G6': { x: 755*escala, y: 615*escala }, 'H6': { x: 910*escala, y: 611*escala },
+    'A7': { x: 33*escala, y: 750*escala }, 'B7': { x: 207*escala, y: 745*escala }, 'C7': { x: 316*escala, y: 739*escala }, 'D7': { x: 425*escala, y: 730*escala }, 'E7': { x: 537*escala, y: 725*escala }, 'F7': { x: 646*escala, y: 725*escala }, 'G7': { x: 755*escala, y: 722*escala }, 'H7': { x: 908*escala, y: 713*escala },
   };
   
   const nodos = [];
@@ -242,8 +244,8 @@ function inicializarRed() {
   network = new vis.Network(container, data, options);
 
   network.moveTo({
-    position: { x: 500, y: 392.5 },
-    scale: 1.0,
+    position: { x: 400, y: 314 }, // Centrado para el nuevo tamaño
+    scale: 1.0, // Mantenemos la escala de zoom
     offset: { x: 0, y: 0 }
   });
 

@@ -29,7 +29,7 @@ function euclidesPasos(a, b, etiqueta = '') {
 
 function setup() {
   let canvasContainer = select('#canvas-container');
-  let canvas = createCanvas(1000, 650);
+  let canvas = createCanvas(800, 520);
   canvas.parent(canvasContainer);
 
   inputA = select('#input-a');
