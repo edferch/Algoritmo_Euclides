@@ -102,7 +102,7 @@ main#network-container {
   border-radius: 12px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  background-image: url('../img/mapa_fondo.png'); /* Corregido para despliegue */
+  background-image: url('../img/mapa_fondo.PNG'); /* Corregido para despliegue */
   background-size: 100% 100%;
   background-position: center;
 }
