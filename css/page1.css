@@ -109,6 +109,7 @@ main#canvas-container {
    border: 1px solid rgba(255, 255, 255, 0.2);
    width: 360px;
    min-height: 400px;
+   height: fit-content;
    display: flex;
    flex-direction: column;
 }
@@ -124,7 +125,7 @@ main#canvas-container {
 .state-panel p#step-description{
   font-size: 1rem;
   line-height: 1.6;
-  color: #bdc3c7;
+  color: #e0e0e0;
   flex-grow: 1;
 }
 

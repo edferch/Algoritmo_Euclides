@@ -201,7 +201,7 @@ function mostrarPaso(index) {
   rect(x_inicio, y_inicio, w, h);
 
   const tamCuadrado = numB * escala;
-  const textoCuadradoSize = constrain(tamCuadrado / 3, 14, 50);
+  const textoCuadradoSize = max(1, constrain(tamCuadrado / 3, 14, 50));
 
   for (let i = 0; i < paso.cociente; i++) {
     let x = x_inicio + i * tamCuadrado;
@@ -227,7 +227,7 @@ function mostrarPaso(index) {
     strokeWeight(2);
     rect(x, y_inicio, restoW, tamCuadrado);
 
-    const textoRestoSize = constrain(min(restoW, tamCuadrado) / 2.5, 14, 50);
+    const textoRestoSize = max(1, constrain(min(restoW, tamCuadrado) / 2.5, 14, 50));
     fill(COLOR_TEXTO);
     noStroke();
     textAlign(CENTER, CENTER);
