@@ -61,17 +61,33 @@ function draw() {
 }
 
 function iniciarVisualizacion() {
-  originalA = parseInt(inputA.value());
-  originalB = parseInt(inputB.value());
-  originalC = inputC ? parseInt(inputC.value()) : NaN;
+  let valA = parseInt(inputA.value());
+  let valB = parseInt(inputB.value());
+  let valC = inputC ? parseInt(inputC.value()) : NaN;
 
-  if (isNaN(originalA) || isNaN(originalB) || originalA <= 0 || originalB <= 0) {
-    alert("Por favor, ingresa al menos dos números enteros positivos.");
+  if (isNaN(valA) || isNaN(valB) || valA === 0 || valB === 0) {
+    alert("Por favor, ingresa al menos dos números enteros distintos de cero.");
+    return;
+  }
+
+  if (!isNaN(valC) && valC === 0) {
+    alert("El número C opcional no puede ser cero si se proporciona.");
     return;
   }
 
   pasos = [];
   pasoActual = 0;
+
+  originalA = Math.abs(valA);
+  originalB = Math.abs(valB);
+  originalC = isNaN(valC) ? NaN : Math.abs(valC);
+
+  if (valA < 0 || valB < 0 || (!isNaN(valC) && valC < 0)) {
+    pasos.push({
+      esMensaje: true,
+      mensaje: `Se han ingresado números negativos asi que se usarán sus valores absolutos<br><br>Calculando con: ${originalA}, ${originalB}` + (!isNaN(originalC) ? `, ${originalC}` : '')
+    });
+  }
 
   if (isNaN(originalC) || originalC <= 0) {
     let numeros = [originalA, originalB].sort((a, b) => b - a);
